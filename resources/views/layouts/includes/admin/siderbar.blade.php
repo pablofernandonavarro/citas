@@ -7,44 +7,17 @@
             'active' => request()->routeIs('admin.dashboard'),
         ],
         [
-            'Headers' => 'Management',
+            'Headers' => 'Gestión',
         ],
         [
-            'name' => 'Users',
-            'ico' => 'fa-solid fa-users',
-            'href' => route('admin.dashboard'),
-            'active' => request()->routeIs('admin.users.*'),
-            'submenu' => [
-                [
-                    'name' => 'Todos los usuarios',
-                    'href' => route('admin.dashboard'),
-                    'active' => request()->routeIs('admin.dashboard'),
-                ],
-                [
-                    'name' => 'Crear usuario',
-                    'href' => route('admin.dashboard'),
-                    'active' => request()->routeIs('admin.users.create'),
-                ],
-            ],
+            'name' => 'Roles y permisos',
+            'ico' => 'fa-solid fa-shield-halved',
+            'href' => route('admin.roles.index'),
+            'active' => request()->routeIs('admin.roles.*'),
+            
+            
         ],
-        [
-            'name' => 'Appointments',
-            'ico' => 'fa-solid fa-calendar-check',
-            'href' => route('admin.dashboard'),
-            'active' => request()->routeIs('admin.dashboard'),
-            'submenu' => [
-                [
-                    'name' => 'All Users',
-                    'href' => route('admin.dashboard'),
-                    'active' => request()->routeIs('admin.dashboard'),
-                ],
-                [
-                    'name' => 'Create User',
-                    'href' => route('admin.dashboard'),
-                    'active' => request()->routeIs('admin.users.create'),
-                ],
-            ],
-        ],
+     
         [
             'name' => 'Services',
             'ico' => 'fa-solid fa-concierge-bell',
