@@ -1,3 +1,7 @@
-<x-admin-layout>
-    <h1 class="text-2xl font-semibold text-gray-900">Admin Dashboard</h1>
+<x-admin-layout title="Dashboard" :breadcrumbs="[['name' => 'Dashboard', 'href' => route('admin.dashboard')], ['name' => 'prueba']]">
+    <x-slot name="action">
+        hola
+    </x-slot>
+   hola desde el admon
+ 
 </x-admin-layout>
