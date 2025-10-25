@@ -21,6 +21,8 @@
     <!-- FontAwesome -->
     <script src="https://kit.fontawesome.com/616056bedb.js" crossorigin="anonymous"></script>
 
+
+
     <!-- WireUI Styles & Scripts -->
     <wireui:scripts />
 
@@ -30,6 +32,11 @@
 
     <!-- Styles -->
     @livewireStyles
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
 
 </head>
@@ -65,6 +72,35 @@
 
     @livewireScripts
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    @if (session('swal'))
+        <script>
+            Swal.fire(@json(session('swal')));
+        </script>
+    @endif
+
+    <script>
+        const forms = document.querySelectorAll('.delete-form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "¡No podrás revertir esto!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>

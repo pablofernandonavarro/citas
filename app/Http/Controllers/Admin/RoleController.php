@@ -34,8 +34,15 @@ class RoleController extends Controller
        ]);
          Role::create(
             ['name' => $request->name]
-         ); 
-            return redirect()->route('admin.roles.index')->with('info', 'Role created successfully');
+         );
+         session()->flash('swal',
+          [
+            'icon' => 'success',
+            'title' => 'Rol fue creado exitosamente',
+            'text' => 'El rol se ha creado correctamente en el sistema.',
+          ]
+        );
+            return redirect()->route('admin.roles.index')->with('info', 'Rol creado exitosamente');
     }
 
     /**
@@ -50,23 +57,68 @@ class RoleController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Role $role)
+
     {
+        if($role->id <= 4){
+            session()->flash('swal',
+            [
+              'icon' => 'error',
+              'title' => 'Acción no permitida',
+              'text' => 'Los roles del sistema no pueden ser editados.',
+            ]
+          );
+              return redirect()->route('admin.roles.index');
+        }
         return view('admin.roles.edit', compact('role'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update()
+    public function update(Request $request, Role $role)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:roles,name,' . $role->id,
+        ]);
+
+        $role->update(
+            ['name' => $request->name]
+         );
+         session()->flash('swal',
+          [
+            'icon' => 'success',
+            'title' => 'Rol fue actualizado exitosamente',
+            'text' => 'El rol se ha actualizado correctamente en el sistema.',
+          ]
+        );
+            return redirect()->route('admin.roles.index');
+
+        
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+
+    public function destroy(Role $role)
     {
+        if($role->id <= 4){
+            session()->flash('swal',
+            [
+              'icon' => 'error',
+              'title' => 'Acción no permitida',
+              'text' => 'Los roles del sistema no pueden ser eliminados.',
+            ]
+          );
+              return redirect()->route('admin.roles.index');
+        }
+       
+        $role->delete();
+        session()->flash('swal',
+          [
+            'icon' => 'success',
+            'title' => 'Rol fue eliminado exitosamente',
+            'text' => 'El rol se ha eliminado correctamente del sistema.',
+          ]
+        );
+            return redirect()->route('admin.roles.index');
         
     }
 }

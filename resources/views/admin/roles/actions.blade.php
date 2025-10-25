@@ -5,10 +5,12 @@
         </x-wireui-button>
     </a>
     <form method="POST" action="{{ route('admin.roles.destroy', $role) }}" 
-        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este rol?');">
+        class="delete-form">
         @csrf
         @method('DELETE')
+    
         <x-wireui-button danger type="submit" red xs>
             <icon class="fa-solid fa-trash" />
         </x-wireui-button>
+    </form>
 </div>
