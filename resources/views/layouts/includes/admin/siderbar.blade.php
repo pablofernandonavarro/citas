@@ -30,8 +30,13 @@
             'href' => route('admin.patients.index'),
             'active' => request()->routeIs('admin.patients.*'),
         ],
-       
-      
+         [
+             'name' => 'obras sociales',
+             'ico' => 'fa-solid fa-calendar-check',
+             'href' => route('admin.socialworks.index'),
+             'active' => request()->routeIs('admin.socialworks.*'),
+        ],
+
     ];
 @endphp
 

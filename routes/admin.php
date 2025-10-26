@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\SocialWorkController;
 
 Route::get('/', function () {
     return view('admin.dashboard');  
@@ -15,3 +16,5 @@ Route::resource('roles', RoleController::class);
 Route::resource('users', UserController::class);
 // Gestion de pacientes
 Route::resource('patients', PatientController::class);
+// gestion de obras sociales
+ Route::resource('socialworks', SocialWorkController::class);
