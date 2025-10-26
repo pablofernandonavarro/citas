@@ -19,17 +19,12 @@
         ],
      
         [
-            'name' => 'Services',
-            'ico' => 'fa-solid fa-concierge-bell',
-            'href' => route('admin.dashboard'),
-            'active' => request()->routeIs('admin.services.*'),
+            'name' => 'Usuarios',
+            'ico' => 'fa-solid fa-users',
+            'href' => route('admin.users.index'),
+            'active' => request()->routeIs('admin.users.*'),
         ],
-        [
-            'name' => 'Doctors',
-            'ico' => 'fa-solid fa-user-doctor',
-            'href' => route('admin.dashboard'),
-            'active' => request()->routeIs('admin.doctors.*'),
-        ],
+      
     ];
 @endphp
 
