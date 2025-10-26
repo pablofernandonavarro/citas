@@ -13,5 +13,5 @@
         </x-wireui-button>
     </x-slot>
 
-    @livewire('admin.datatables.user-table')
+    @livewire('Admin.Datatables.User-Table')
 </x-admin-layout>

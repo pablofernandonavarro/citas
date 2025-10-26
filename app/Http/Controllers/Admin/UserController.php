@@ -50,6 +50,20 @@ class UserController extends Controller
             'address' => $data['address'],
         ]);
         $user->roles()->attach($data['role_id']);
+        
+        // Si el rol seleccionado es Paciente, redirigir a crear paciente
+        $role = Role::find($data['role_id']);
+        if ($role && strtolower($role->name) === 'paciente') {
+            session()->flash('swal',
+              [
+                'icon' => 'info',
+                'title' => 'Usuario creado',
+                'text' => 'Ahora completa los datos del paciente.',
+              ]
+            );
+            return redirect()->route('admin.patients.create')->with('user_id', $user->id);
+        }
+        
         session()->flash('swal',
           [
             'icon' => 'success',
