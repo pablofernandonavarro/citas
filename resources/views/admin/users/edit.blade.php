@@ -61,7 +61,8 @@
             <x-wireui-input label="Dirección" name="address" placeholder="Ingrese la dirección" class="w-full mb-4"
                 value="{{ old('address', $user->address) }}" required />
 
-            <x-wireui-native-select name="role_id" >
+            <x-wireui-native-select name="role_id" 
+                label="Rol del Usuario" class="w-full mb-4" required>
               
                 <option value="">Seleccione un rol</option>
 

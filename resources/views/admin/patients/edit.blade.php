@@ -9,151 +9,191 @@
     ],
 ]">
     <x-slot name="action">
-        <x-wireui-button primary type="button" blue >
+        <x-wireui-button primary type="button" blue>
             <a href="{{ route('admin.patients.index') }}">
                 <i class="fas fa-arrow-left mr-2"></i>
-               Volver a Pacientes
+                Volver a Pacientes
             </a>
         </x-wireui-button>
     </x-slot>
+    <form action="{{ route('admin.patients.update', $patient) }}" method="POST">
+        @csrf
+        @method('PUT')
+        <x-wireui-card class="mb-6 bg-white">
 
-    <x-wireui-card>
-        <div class="mb-6">
-            <h3 class="text-lg font-semibold">Paciente: {{ $patient->user->name }}</h3>
-            <p class="text-gray-600">DNI: {{ $patient->user->dni }}</p>
-        </div>
+            <div class="lg:flex lg:justify-between items-center">
+                <div class="flex items-center space-x-5 mt-6 lg:mt-0">
+                    <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo"
+                        class="h-20 w-20 rounded-full object-cover object-center">
 
-        <form action="{{ route('admin.patients.update', $patient) }}" method="POST">
-            @csrf
-            @method('PUT')
+                    <div>
+                        <p class="text-2xl font-semibold text-gray-800">{{ $patient->user->name }}</p>
 
-            <div class="grid lg:grid-cols-2 gap-4">
-                <x-wireui-native-select 
-                    label="Obra Social"
-                    name="social_work_id"
-                    class="w-full mb-4"
-                >
-                    <option value="">Seleccione una obra social</option>
-                    @foreach ($socialWorks as $socialWork)
-                        <option value="{{ $socialWork->id }}" {{ old('social_work_id', $patient->social_work_id) == $socialWork->id ? 'selected' : '' }}>
-                            {{ $socialWork->name }}
-                        </option>
-                    @endforeach
-                </x-wireui-native-select>
+                    </div>
+                </div>
+                <div class="mt-6 lg:mt-0">
+                    <x-wireui-button primary type="submit" blue>
+                        <i class="fas fa-edit mr-2"></i>
+                        Editar Paciente
+                    </x-wireui-button>
+                </div>
+            </div>
+        </x-wireui-card>
+        {{-- seccionn de tabs --}}
+        <x-wireui-card>
+            <div class="p-6" x-data="{ tab: 'antecedentes-medicos' }">
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                        <li class="me-2">
+                            <a href="#" x-on:click.prevent="tab = 'datos-personales'" <a href="#"
+                                x-on:click.prevent="tab = 'datos-personales'"
+                                class="inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"
+                                :class="{ 'border-blue-500 text-blue-600': tab === 'datos-personales' }"
+                                :aria-current="tab === 'datos-personales' ? 'page' : false">
+                                <i class="fas fa-user mr-2"></i>
+                                Datos personales
+                            </a>
+                        </li>
+                        <li class="me-2">
+                            <a href="#" x-on:click.prevent="tab = 'antecedentes-medicos'"
+                                class="inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"
+                                :class="{ 'border-blue-500 text-blue-600': tab === 'antecedentes-medicos' }"
+                                aria-current="page">
+                                <i class="fas fa-file-medical mr-2"></i>
+                                Antecedentes médicos
+                            </a>
+                        </li>
+                        <li class="me-2">
+                            <a href="#" x-on:click.prevent="tab = 'informacion-general'"
+                                class="inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"
+                                :class="{ 'border-blue-500 text-blue-600': tab === 'informacion-general' }"
+                                aria-current="page">
+                                <i class="fas fa-file-alt mr-2"></i>
+                                informacion general
+                            </a>
+                        </li>
+                        <li class="me-2">
+                            <a href="#" x-on:click.prevent="tab = 'contacto-emergencia'"
+                                class="inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"
+                                :class="{ 'border-blue-500 text-blue-600': tab === 'contacto-emergencia' }"
+                                aria-current="page">
+                                <i class="fas fa-user-md mr-2"></i>
+                                contacto de emergencia
+                            </a>
+                        </li>
 
-                <x-wireui-input 
-                    label="Número de Afiliado" 
-                    name="affiliate_number" 
-                    placeholder="Número de afiliado a la obra social"
-                    class="w-full mb-4"
-                    value="{{ old('affiliate_number', $patient->affiliate_number) }}"
-                />
+                    </ul>
+
+                </div>
+                <div class="px-4 mt-4">
+
+                    {{-- Datos personales --}}
+                    <div x-show="tab === 'datos-personales'">
+
+                        <x-wireui-alert type="info" class="mb-4">
+                            <x-slot name="title">Edicion de Usuario</x-slot>
+                            <div>
+                                <p> Para editar esta informacion dirígete a la sección de
+                                    <a href="{{ route('admin.users.edit', $patient->user) }}"
+                                        class="text-blue-600 underline hover:text-blue-800" target="_blank">
+                                        perfil de usuario
+                                    </a>
+                                    asociado a este paciente.
+                                </p>
+                            </div>
+                        </x-wireui-alert>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <span class="text-gray-500 font-semibold">Telefono:</span>
+                                <span class="text-gray-900 text-sm ml-1">{{ $patient->user->phone }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 font-semibold">Email:</span>
+                                <span class="text-gray-900 text-sm ml-1">{{ $patient->user->email }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 font-semibold">Direccion:</span>
+                                <span class="text-gray-900 text-sm ml-1">{{ $patient->user->address }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 font-semibold">DNI:</span>
+                                <span class="text-gray-900 text-sm ml-1">{{ $patient->user->dni }}</span>
+                            </div>
+                            
+                           
+
+                        </div>
+
+                    </div>
+
+                    {{-- Antecedentes médicos --}}
+                    <div x-show="tab === 'antecedentes-medicos'">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <x-wireui-textarea
+                                label="Alergias conocidas"
+                                >
+                                {{ old('allergies',$patient->allergies) }}
+                                </x-wireui-textarea>
+                            </div>
+                            <div>
+                                 <x-wireui-textarea
+                                label="Enfermedades cronicas"
+                                >
+                                {{ old('chronic_conditions',$patient->chronic_conditions) }}
+                                </x-wireui-textarea>
+                            </div>
+                            <div>
+                                 <x-wireui-textarea
+                                label="Antecedentes quirurgicos"
+                                >
+                                {{ old('surgical_history',$patient->surgical_history) }}
+                                </x-wireui-textarea>
+                            </div>
+                            <div>
+                                 <x-wireui-textarea
+                                label="Antecedentes familiares"
+                                >
+                                {{ old('family_history',$patient->family_history) }}
+                                </x-wireui-textarea>
+                            </div>
+                            <div>
+                                 <x-wireui-textarea
+                                label="Historico de cirugias"
+                                >
+                                {{ old('surgeries_history',$patient->surgeries_history) }}
+                                </x-wireui-textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- informacion general --}}
+                    <div x-show="tab === 'informacion-general'">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <x-wireui-textarea
+                                label="Medicamentos actuales"
+                                >
+                                {{ old('current_medications',$patient->current_medications) }}
+                                </x-wireui-textarea>
+                            </div>
+                            <div>
+                                 <x-wireui-textarea
+                                label="Habitos de vida"
+                                >
+                                {{ old('lifestyle_habits',$patient->lifestyle_habits) }}
+                                </x-wireui-textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- contacto de emergencia --}}
+                    <div x-show="tab === 'contacto-emergencia'">
+                        contacto-emergencia
+                    </div>
+                </div>
             </div>
 
-            <div class="grid lg:grid-cols-2 gap-4">
-                <x-wireui-input 
-                    label="Alergias" 
-                    name="allergies" 
-                    placeholder="Ingrese alergias"
-                    class="w-full mb-4"
-                    value="{{ old('allergies', $patient->allergies) }}"
-                />
-
-                <x-wireui-input 
-                    label="Número de Historia Clínica" 
-                    name="medical_record_number" 
-                    placeholder="Número de historia clínica"
-                    class="w-full mb-4"
-                    value="{{ old('medical_record_number', $patient->medical_record_number) }}"
-                />
-            </div>
-
-            <div class="grid lg:grid-cols-2 gap-4">
-                <x-wireui-input 
-                    label="Condiciones Crónicas" 
-                    name="chronic_conditions" 
-                    placeholder="Condiciones crónicas"
-                    class="w-full mb-4"
-                    value="{{ old('chronic_conditions', $patient->chronic_conditions) }}"
-                />
-
-                <x-wireui-input 
-                    label="Historial de Cirugías" 
-                    name="surgeries_history" 
-                    placeholder="Historial de cirugías"
-                    class="w-full mb-4"
-                    value="{{ old('surgeries_history', $patient->surgeries_history) }}"
-                />
-            </div>
-
-            <div class="grid lg:grid-cols-2 gap-4">
-                <x-wireui-input 
-                    label="Historial Familiar" 
-                    name="family_history" 
-                    placeholder="Historial familiar"
-                    class="w-full mb-4"
-                    value="{{ old('family_history', $patient->family_history) }}"
-                />
-
-                <x-wireui-input 
-                    label="Condiciones Genéticas" 
-                    name="genetic_conditions" 
-                    placeholder="Condiciones genéticas"
-                    class="w-full mb-4"
-                    value="{{ old('genetic_conditions', $patient->genetic_conditions) }}"
-                />
-            </div>
-
-            <div class="grid lg:grid-cols-2 gap-4">
-                <x-wireui-input 
-                    label="Otras Condiciones" 
-                    name="other_conditions" 
-                    placeholder="Otras condiciones"
-                    class="w-full mb-4"
-                    value="{{ old('other_conditions', $patient->other_conditions) }}"
-                />
-
-                <x-wireui-input 
-                    type="date"
-                    label="Fecha de Nacimiento" 
-                    name="date_of_birth"
-                    class="w-full mb-4"
-                    value="{{ old('date_of_birth', $patient->date_of_birth) }}"
-                />
-            </div>
-
-            <h3 class="text-lg font-semibold mb-4 mt-4">Contacto de Emergencia</h3>
-
-            <div class="grid lg:grid-cols-2 gap-4">
-                <x-wireui-input 
-                    label="Nombre" 
-                    name="emergency_contact_name" 
-                    placeholder="Nombre del contacto"
-                    class="w-full mb-4"
-                    value="{{ old('emergency_contact_name', $patient->emergency_contact_name) }}"
-                />
-
-                <x-wireui-input 
-                    label="Teléfono" 
-                    name="emergency_contact_phone" 
-                    placeholder="Teléfono del contacto"
-                    class="w-full mb-4"
-                    value="{{ old('emergency_contact_phone', $patient->emergency_contact_phone) }}"
-                />
-            </div>
-
-            <x-wireui-input 
-                label="Relación" 
-                name="emergency_contact_relationship" 
-                placeholder="Relación con el paciente"
-                class="w-full mb-4"
-                value="{{ old('emergency_contact_relationship', $patient->emergency_contact_relationship) }}"
-            />
-
-            <x-wireui-button primary type="submit" class="mt-4">
-                Actualizar Paciente
-            </x-wireui-button>
-        </form>
-    </x-wireui-card>
-    
+        </x-wireui-card>
+    </form>
 </x-admin-layout>
