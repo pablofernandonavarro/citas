@@ -41,7 +41,7 @@
         </x-wireui-card>
         {{-- seccionn de tabs --}}
         <x-wireui-card>
-            <div class="p-6" x-data="{ tab: 'antecedentes-medicos' }">
+            <div class="p-6" x-data="{ tab: 'contacto-emergencia' }">
                 <div class="border-b border-gray-200 dark:border-gray-700">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                         <li class="me-2">
@@ -118,9 +118,14 @@
                             <div>
                                 <span class="text-gray-500 font-semibold">DNI:</span>
                                 <span class="text-gray-900 text-sm ml-1">{{ $patient->user->dni }}</span>
+
                             </div>
-                            
-                           
+                            <div>
+                                <span class="text-gray-500 font-semibold">Numero obra Social:</span>
+                                <span class="text-gray-900 text-sm ml-1">{{ $patient->medical_record_number }}</span>
+                            </div>
+
+
 
                         </div>
 
@@ -130,66 +135,73 @@
                     <div x-show="tab === 'antecedentes-medicos'">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <x-wireui-textarea
-                                label="Alergias conocidas"
-                                >
-                                {{ old('allergies',$patient->allergies) }}
-                                </x-wireui-textarea>
+                                <x-wireui-textarea label="Alergias conocidas"
+                                name="allergies">{{ old('allergies', $patient->allergies) }}</x-wireui-textarea>
                             </div>
                             <div>
-                                 <x-wireui-textarea
-                                label="Enfermedades cronicas"
-                                >
-                                {{ old('chronic_conditions',$patient->chronic_conditions) }}
-                                </x-wireui-textarea>
+                                <x-wireui-textarea label="Enfermedades cronicas"
+                                name="chronic_conditions">{{ old('chronic_conditions', $patient->chronic_conditions) }}</x-wireui-textarea>
                             </div>
                             <div>
-                                 <x-wireui-textarea
-                                label="Antecedentes quirurgicos"
-                                >
-                                {{ old('surgical_history',$patient->surgical_history) }}
-                                </x-wireui-textarea>
+                                <x-wireui-textarea label="Antecedentes quirurgicos"
+                                name="surgeries_history">{{ old('surgeries_history', $patient->surgeries_history) }}</x-wireui-textarea>
                             </div>
                             <div>
-                                 <x-wireui-textarea
-                                label="Antecedentes familiares"
-                                >
-                                {{ old('family_history',$patient->family_history) }}
-                                </x-wireui-textarea>
+                                <x-wireui-textarea label="Antecedentes familiares"
+                                name="family_history">{{ old('family_history', $patient->family_history) }}</x-wireui-textarea>
                             </div>
-                            <div>
-                                 <x-wireui-textarea
-                                label="Historico de cirugias"
-                                >
-                                {{ old('surgeries_history',$patient->surgeries_history) }}
-                                </x-wireui-textarea>
-                            </div>
+                              
+
                         </div>
                     </div>
 
                     {{-- informacion general --}}
                     <div x-show="tab === 'informacion-general'">
-                        <div class="grid grid-cols-2 gap-4">
+                        
+
                             <div>
-                                <x-wireui-textarea
-                                label="Medicamentos actuales"
-                                >
-                                {{ old('current_medications',$patient->current_medications) }}
-                                </x-wireui-textarea>
+                                <x-wireui-native-select label="obra social"
+                                    name="social_work_id"
+                                    value="{{ old('social_work_id', $patient->social_work_id) }}">
+                                    <option value=""
+                                    class="mb-6">
+                                        Seleccione una obra social
+                                    </option>
+                                    @foreach ($socialWorks as $socialWork)
+                                        <option value="{{ $socialWork->id }}" @selected($socialWork->id == old('social_work_id', $patient->social_work_id))>
+                                            {{ $socialWork->name }}
+                                        </option>
+                                    @endforeach
+                                </x-wireui-native-select>
                             </div>
+
+
+                           
                             <div>
-                                 <x-wireui-textarea
-                                label="Habitos de vida"
-                                >
-                                {{ old('lifestyle_habits',$patient->lifestyle_habits) }}
-                                </x-wireui-textarea>
+                                <x-wireui-textarea label="Otras observaciones"
+                                    name="other_conditions">{{ old('other_conditions', $patient->other_conditions) }}</x-wireui-textarea>
                             </div>
-                        </div>
+                        
                     </div>
 
                     {{-- contacto de emergencia --}}
                     <div x-show="tab === 'contacto-emergencia'">
-                        contacto-emergencia
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <x-wireui-input label="Nombre del contacto de emergencia" name="emergency_contact_name"
+                                    value="{{ old('emergency_contact_name', $patient->emergency_contact_name) }}" />
+                            </div>
+                            <div>
+                                <x-wireui-input label="Telefono del contacto de emergencia"
+                                    name="emergency_contact_phone"
+                                    value="{{ old('emergency_contact_phone', $patient->emergency_contact_phone) }}" />
+                            </div>
+                            <div>
+                                <x-wireui-input label="Relacion con el contacto de emergencia"
+                                    name="emergency_contact_relationship"
+                                    value="{{ old('emergency_contact_relationship', $patient->emergency_contact_relationship) }}" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

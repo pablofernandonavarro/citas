@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use App\Models\SocialWork;
 
 class PatientController extends Controller
 {
@@ -75,7 +76,7 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient)
     {
-        $socialWorks = \App\Models\SocialWork::all();
+        $socialWorks = SocialWork::all();
         return view('admin.patients.edit', compact('patient', 'socialWorks'));
     }
 
@@ -83,21 +84,19 @@ class PatientController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Patient $patient)
-    {
+    {  
         $validated = $request->validate([
-            'social_work_id' => 'nullable|exists:social_works,id',
-            'affiliate_number' => 'nullable|string|max:100',
-            'allergies' => 'nullable|string',
-            'medical_record_number' => 'nullable|string|unique:patients,medical_record_number,' . $patient->id,
-            'chronic_conditions' => 'nullable|string',
-            'surgeries_history' => 'nullable|string',
-            'family_history' => 'nullable|string',
-            'genetic_conditions' => 'nullable|string',
-            'other_conditions' => 'nullable|string',
-            'emergency_contact_name' => 'nullable|string|max:255',
-            'emergency_contact_phone' => 'nullable|string|max:20',
-            'emergency_contact_relationship' => 'nullable|string|max:255',
-            'date_of_birth' => 'nullable|date',
+          'allergies' => 'nullable|string',
+          'chronic_conditions' => 'nullable|string|max:255',
+          'surgeries_history' => 'nullable|string|max:255',
+          'family_history' => 'nullable|string|max:255',
+          'social_work_id' => 'nullable|exists:social_works,id',
+          'other_conditions' => 'nullable|string|max:255',
+          'emergency_contact_name' => 'nullable|string|max:255',
+          'emergency_contact_phone' => 'nullable|string|max:20',
+          'emergency_contact_relationship' => 'nullable|string|max:255',
+          'medical_record_number' => 'nullable|string|unique:patients,medical_record_number,' . $patient->id,
+
         ]);
 
         $patient->update($validated);
@@ -110,7 +109,7 @@ class PatientController extends Controller
           ]
         );
 
-        return redirect()->route('admin.patients.index');
+        return redirect()->route('admin.patients.edit', $patient);
     }
 
     /**
