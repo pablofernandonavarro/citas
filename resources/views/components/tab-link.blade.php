@@ -1,4 +1,4 @@
-@props(['tab'])
+@props(['tab' => 'default'])
 
 
 <li class="me-2">

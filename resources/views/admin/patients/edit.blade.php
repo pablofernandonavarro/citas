@@ -42,7 +42,7 @@
         {{-- seccionn de tabs --}}
         <x-wireui-card>
             <x-tabs active="datos-personales">
-                <x-slot name="header">
+                 <x-slot name="header">
                     <x-tab-link tab="datos-personales">
                         Datos personales
                     </x-tab-link>
@@ -55,7 +55,7 @@
                     <x-tab-link tab="contacto-emergencia">
                         Contacto de emergencia
                     </x-tab-link>
-                </x-slot>
+                </x-slot> 
 
                 {{-- Datos personales --}}
                 <x-tab-content tab="datos-personales">
