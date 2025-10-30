@@ -36,6 +36,12 @@
              'href' => route('admin.socialworks.index'),
              'active' => request()->routeIs('admin.socialworks.*'),
         ],
+            [
+                'name' => 'Doctores',
+                'ico' => 'fa-solid fa-user-doctor',
+                'href' => route('admin.doctors.index'),
+                'active' => request()->routeIs('admin.doctors.*'),
+            ],
 
     ];
 @endphp

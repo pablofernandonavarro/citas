@@ -23,11 +23,15 @@
 
             <div class="lg:flex lg:justify-between items-center">
                 <div class="flex items-center space-x-5 mt-6 lg:mt-0">
-                    <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo"
+                    <img src="{{ $patient->user->profile_photo_url }}" alt="Profile Photo"
                         class="h-20 w-20 rounded-full object-cover object-center">
 
                     <div>
                         <p class="text-2xl font-semibold text-gray-800">{{ $patient->user->name }}</p>
+                        <p class="text-sm font-semibold text-gray-500">N° obra Social:
+                            {{ $patient->medical_record_number ?? 'No disponible' }}</p>
+                        <p class="text-sm font-semibold text-gray-500">DNI:
+                            {{ $patient->user->dni?? 'No disponible' }}</p>
 
                     </div>
                 </div>
@@ -42,7 +46,7 @@
         {{-- seccionn de tabs --}}
         <x-wireui-card>
             <x-tabs active="datos-personales">
-                 <x-slot name="header">
+                <x-slot name="header">
                     <x-tab-link tab="datos-personales">
                         Datos personales
                     </x-tab-link>
@@ -55,7 +59,7 @@
                     <x-tab-link tab="contacto-emergencia">
                         Contacto de emergencia
                     </x-tab-link>
-                </x-slot> 
+                </x-slot>
 
                 {{-- Datos personales --}}
                 <x-tab-content tab="datos-personales">
@@ -88,10 +92,7 @@
                             <span class="text-gray-500 font-semibold">DNI:</span>
                             <span class="text-gray-900 text-sm ml-1">{{ $patient->user->dni }}</span>
                         </div>
-                        <div>
-                            <span class="text-gray-500 font-semibold">Numero obra Social:</span>
-                            <span class="text-gray-900 text-sm ml-1">{{ $patient->medical_record_number }}</span>
-                        </div>
+
                     </div>
                 </x-tab-content>
 
@@ -120,24 +121,28 @@
                 {{-- informacion general --}}
                 <x-tab-content tab="informacion-general">
                     <div>
-                        <x-wireui-native-select label="obra social"
-                            name="social_work_id"
+                        <x-wireui-native-select label="Obra Social" name="social_work_id"
                             value="{{ old('social_work_id', $patient->social_work_id) }}">
                             <option value="" class="mb-6">
                                 Seleccione una obra social
                             </option>
                             @foreach ($socialWorks as $socialWork)
-                                <option value="{{ $socialWork->id }}" @selected($socialWork->id == old('social_work_id', $patient->social_work_id))>
+                                <option value="{{ $socialWork->id }}" @selected($socialWork->id == old('id', $patient->id))>
                                     {{ $socialWork->name }}
                                 </option>
                             @endforeach
                         </x-wireui-native-select>
                     </div>
-
+                    <div>
+                        <x-wireui-input label="Número de obra social" name="medical_record_number"
+                            value="{{ old('medical_record_number', $patient->medical_record_number) }}" />
+                    </div>
                     <div>
                         <x-wireui-textarea label="Otras observaciones"
-                            name="other_conditions">{{ old('other_conditions', $patient->other_conditions) }}</x-wireui-textarea>
+                            name="other_conditions">{{ old('other_conditions', $patient->other_conditions) }}
+                        </x-wireui-textarea>
                     </div>
+
                 </x-tab-content>
 
                 {{-- contacto de emergencia --}}
@@ -148,8 +153,7 @@
                                 value="{{ old('emergency_contact_name', $patient->emergency_contact_name) }}" />
                         </div>
                         <div>
-                            <x-wireui-input label="Telefono del contacto de emergencia"
-                                name="emergency_contact_phone"
+                            <x-wireui-input label="Telefono del contacto de emergencia" name="emergency_contact_phone"
                                 value="{{ old('emergency_contact_phone', $patient->emergency_contact_phone) }}" />
                         </div>
                         <div>

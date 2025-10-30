@@ -1,5 +1,5 @@
 <div class="flex items-center space-x-2">
-    <a href="{{ route('admin.patients.edit', $patient) }}">
+    <a href="{{ route('admin.doctors.edit', $doctor) }}">
         <x-wireui-button primary type="button" blue xs>
             <icon class="fa-solid fa-pen-to-square" />
         </x-wireui-button>

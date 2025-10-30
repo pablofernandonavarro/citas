@@ -23,7 +23,9 @@ return new class extends Migration
             ->constrained()
             ->onDelete('set null');
             $table->string('allergies')->nullable();
-            $table->string('medical_record_number')->unique();
+            $table->string('medical_record_number')
+            ->nullable()
+            ->unique();
             $table->string('chronic_conditions')->nullable();
             $table->string('surgeries_history')->nullable();
             $table->string('family_history')->nullable();

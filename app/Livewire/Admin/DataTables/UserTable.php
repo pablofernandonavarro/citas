@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Admin\DataTables;
 
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class UserTable extends DataTableComponent
 {
@@ -14,6 +14,7 @@ class UserTable extends DataTableComponent
     {
         return User::query()->with('roles');
     }
+
     public function configure(): void
     {
         $this->setPrimaryKey('id');
@@ -22,30 +23,32 @@ class UserTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Id", "id")
+            Column::make('Id', 'id')
                 ->sortable(),
-            Column::make("Nombre", "name")
+            Column::make('Nombre', 'name')
+                ->searchable()
                 ->sortable(),
-            Column::make("Correo Electrónico", "email")
+            Column::make('Correo Electrónico', 'email')
                 ->sortable(),
-            Column::make("Teléfono", "phone")
+            Column::make('Teléfono', 'phone')
                 ->sortable(),
-            Column::make("DNI", "dni")
-                ->sortable(),   
-            Column::make("Rol", "roles")
+            Column::make('DNI', 'dni')
+                ->searchable()
+                ->sortable(),
+            Column::make('Rol', 'roles')
                 ->label(
                     function ($row) {
                         return $row->roles->first()->name ?? 'Sin Rol';
                     }
                 ),
-            Column::make("Creado en", "created_at")
+            Column::make('Creado en', 'created_at')
                 ->sortable(),
-            Column::make("Actualizado en", "updated_at")
+            Column::make('Actualizado en', 'updated_at')
                 ->sortable(),
-                  Column::make('Acciones')
-                ->label(function($row) {
+            Column::make('Acciones')
+                ->label(function ($row) {
                     return view('admin.users.actions',
-                     ['user' => $row]);
+                        ['user' => $row]);
                 }),
         ];
     }
