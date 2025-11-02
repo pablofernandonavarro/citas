@@ -13,11 +13,22 @@ class AppointmentService
 
      $doctors = Doctor::whereHas('schedules', function($query) use ($date, $hourStart, $hourEnd, $speciality_id) {
         $query->where('day_of_week', $date->dayOfWeek)
-              ->where('start_time', '<=', $hourStart);
+              ->where('start_time', '>=', $hourStart)
+              ->where('start_time', '<', $hourEnd);
               
-    })->when($speciality_id, function($query) use ($speciality_id) {
-        $query->where('speciality_id', $speciality_id);
-    })->get();
+    })->when($speciality_id, function($query,$speciality_id) {
+        return $query->where('speciality_id', $speciality_id);
+       })
+        ->with([
+        'user',
+        'speciality',
+        'schedules' => function($query) use ($date, $hourStart, $hourEnd) {
+            $query->where('day_of_week', $date->dayOfWeek)
+                  ->where('start_time', '>=', $hourStart)
+                  ->where('start_time', '<', $hourEnd);
+        }
+       ])
+   ->get();
 
      dd($doctors->toArray());
 
