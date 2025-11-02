@@ -55,11 +55,9 @@ class DoctorController extends Controller
         return redirect()->route('admin.doctors.edit', $doctor);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Doctor $doctor)
+  public function schedules(Doctor $doctor)
     {
-        //
+        
+        return view('admin.doctors.schedules', compact('doctor'));
     }
 }

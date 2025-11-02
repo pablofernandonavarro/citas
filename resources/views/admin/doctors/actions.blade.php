@@ -4,5 +4,9 @@
             <icon class="fa-solid fa-pen-to-square" />
         </x-wireui-button>
     </a>
+    <a href="{{ route('admin.doctors.schedules', $doctor) }}">
+        <x-wireui-button primary type="button" green xs>
+            <icon class="fa-solid fa-clock" />
+        </x-wireui-button>
    
 </div>

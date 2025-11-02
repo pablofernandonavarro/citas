@@ -1,0 +1,17 @@
+<?php
+
+return [
+    'days' => [
+        1 => 'lunes',
+        2 => 'martes',
+        3 => 'miércoles',
+        4 => 'jueves',
+        5 => 'viernes',
+        // 6 => 'sábado',
+        // 0 => 'domingo',
+    ],
+    'appointments_duration' => 15,
+    'start_time' => '10:00:00',
+    'end_time' => '16:00:00',
+    
+];

@@ -37,7 +37,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-
+    @stack('css')
 
 </head>
 
@@ -79,6 +79,12 @@
     @endif
 
     <script>
+        livewire.on('swal', data => {
+            Swal.fire(data[0]);
+        });
+    </script>
+
+    <script>
         const forms = document.querySelectorAll('.delete-form');
         forms.forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -100,6 +106,8 @@
             });
         });
     </script>
+
+    @stack('js')
 
 </body>
 

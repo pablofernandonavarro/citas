@@ -21,3 +21,5 @@ Route::resource('patients', PatientController::class)->only(['index', 'edit', 'u
  Route::resource('socialworks', SocialWorkController::class);
 // gestion de doctores
  Route::resource('doctors', DoctorController::class)->only(['index', 'edit', 'update']);    
+
+ Route::get('doctors/{doctor}/schedules', [DoctorController::class, 'schedules'])->name('doctors.schedules');
