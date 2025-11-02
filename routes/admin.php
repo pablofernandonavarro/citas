@@ -6,9 +6,10 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\SocialWorkController;
 use App\Http\Controllers\Admin\DoctorController;
+use App\Http\Controllers\Admin\AppointmentController;
 
 Route::get('/', function () {
-    return view('admin.dashboard');  
+    return view('admin.dashboard');
 })->name('dashboard');
 
 // Gestion de roles
@@ -20,6 +21,8 @@ Route::resource('patients', PatientController::class)->only(['index', 'edit', 'u
 // gestion de obras sociales
  Route::resource('socialworks', SocialWorkController::class);
 // gestion de doctores
- Route::resource('doctors', DoctorController::class)->only(['index', 'edit', 'update']);    
+ Route::resource('doctors', DoctorController::class)->only(['index', 'edit', 'update']);
 
  Route::get('doctors/{doctor}/schedules', [DoctorController::class, 'schedules'])->name('doctors.schedules');
+
+ Route::resource('appointments', AppointmentController::class);

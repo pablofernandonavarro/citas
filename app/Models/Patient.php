@@ -30,10 +30,14 @@ class Patient extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
+
     // relacion con el modelo SocialWork INVERSA
     public function socialWork()
     {
         return $this->belongsTo(SocialWork::class);
+    }
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

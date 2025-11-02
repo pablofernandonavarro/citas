@@ -42,8 +42,14 @@
                 'href' => route('admin.doctors.index'),
                 'active' => request()->routeIs('admin.doctors.*'),
             ],
-
-    ];
+        [
+            'name' => 'Turnos',
+            'ico' => 'fa-solid fa-calendar-days',
+            'href' => route('admin.appointments.index'),
+            'active' => request()->routeIs('admin.appointments.*'),
+        ],
+    ];      
+    
 @endphp
 
 <aside id="logo-sidebar"
