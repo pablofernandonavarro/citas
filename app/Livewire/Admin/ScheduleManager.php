@@ -62,7 +62,7 @@ class ScheduleManager extends Component
 
                 foreach($this->days as $index => $day) {
                 $this->schedule[$index][$time->format('H:i:s')] = $schedules->contains(function($schedule) use ($index, $time) {
-                    return $schedule->day_of_week == $index && $schedule->start_time->format('H:i:s') == $time->format('H:i:s');
+                    return $schedule->day_of_week == $index && $schedule->start_time == $time->format('H:i:s');
                   
                  });
                 }

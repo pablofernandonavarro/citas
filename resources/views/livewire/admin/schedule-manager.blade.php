@@ -2,10 +2,11 @@
     <x-wireui-card>
         <div class="mb-4 flex items-center justify-between">
             <h1 class="text-xl font-semibold mb-4">
-                Gestionar Horarios
+                Gestionar Horarios del Dr./Dra. : {{ $doctor->user->name }}
             </h1>
             <x-wireui-button wire:click="save">
                 Guardar Horarios
+               
             </x-wireui-button>
         </div>
         <div class="overflow-x-auto">

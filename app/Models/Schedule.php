@@ -13,8 +13,8 @@ class Schedule extends Model
         // 'end_time',
     ];
    protected $casts = [
-       'start_time' => 'datetime',
-    //    'end_time' => 'datetime',
+         'day_of_week' => 'integer',
+         // start_time se mantiene como string para evitar conversión de timezone
    ];
     public function doctor()
     {

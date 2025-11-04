@@ -79,8 +79,10 @@
     @endif
 
     <script>
-        livewire.on('swal', data => {
-            Swal.fire(data[0]);
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('swal', data => {
+                Swal.fire(data[0]);
+            });
         });
     </script>
 
