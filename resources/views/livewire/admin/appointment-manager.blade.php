@@ -68,6 +68,7 @@
                                         <li>
                                             <x-wireui-button
                                                 :disabled="$schedule['disabled']"
+                                                :color="$schedule['disabled'] ? 'gray' : 'primary'"
                                                 class="w-full"
                                                 x-on:click="selectSchedule({{ $availability['doctor']->id }}, '{{ $schedule['start_time'] }}')"
                                                 x-bind:class="selectedSchedules.doctor_id === {{ $availability['doctor']->id }} &&
@@ -131,13 +132,14 @@
                             </div>
                             <hr class="my-4">
                              <div class="space-y-6">
-                             <x-wireui-select 
+                             <x-wireui-select
                                 label="Paciente"
                                 placeholder="Selecciona un paciente"
                                 wire:model="appointment.patient_id"
                                 :async-data="route('api.patient')"
                                 option-label="name"
                                 option-value="id"
+                                :disabled="$appointmentEdit !== null"
                               />
                               <x-wireui-textarea
                                 label="Motivo de la consulta"
@@ -154,7 +156,7 @@
                                      <span class="font-semibold">Agendar Turno</span>
                              </x-wireui-button>
 
-                           
+
                             </div>
                         </div>
                     </x-wireui-card>

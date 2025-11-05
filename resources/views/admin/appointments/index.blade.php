@@ -18,7 +18,7 @@ title="Turnos" :breadcrumbs="[
     </x-slot>
    
     <x-wireui-card>
-        {{-- Tabla de doctores --}}
+        @livewire('admin.dataTables.appointments-table')
        
     </x-wireui-card>
 

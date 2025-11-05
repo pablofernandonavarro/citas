@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App;
 use App\Models\Speciality;
 use App\Services\AppointmentService;
 use Carbon\Carbon;
@@ -13,6 +14,8 @@ use App\Models\Appointment;
 
 class AppointmentManager extends Component
 {
+
+    public ?Appointment $appointmentEdit = null;
     public $search = [
         'date' => null,
         'hour' => null,
@@ -45,6 +48,10 @@ class AppointmentManager extends Component
         $this->search['date'] = now()->hour >= 12
          ? now()->addDay()->format('Y-m-d')
          : now()->format('Y-m-d');
+
+         if($this->appointmentEdit){
+            $this->appointment['patient_id'] = $this->appointmentEdit->patient_id;
+         }
     }
 
     public function updated($property, $value)
@@ -88,7 +95,7 @@ class AppointmentManager extends Component
         $this->appointment['start_time'] = '';
         $this->appointment['end_time'] = '';
         $this->appointment['duration'] = 0;
-      
+
 
     }
 
@@ -126,7 +133,17 @@ class AppointmentManager extends Component
             'appointment.duration' => 'required|integer|min:15',
             'appointment.reason' => 'nullable|string|max:500',
         ]);
+        if ($this->appointmentEdit){
+            $this->appointmentEdit->update($this->appointment);
+            $this->dispatch('swal', [
+                'icon' => 'success',
+                'title' => 'Cita actualizada con exito',
+                'text' => 'La cita se ha actualizado correctamente',
+            ]);
+            $this->searchAvailability(new AppointmentService());
+            return;
 
+        }
         // Verificar que no exista otra cita en el mismo horario
         // Dos citas se solapan si:
         // - La nueva cita empieza antes de que termine la existente Y
@@ -152,13 +169,13 @@ class AppointmentManager extends Component
       Appointment::create($this->appointment);
 
         session()->flash('swal',[
-          'icon' => 'success',  
+          'icon' => 'success',
           'title' => 'Cita creada con exito',
           'text' => 'La cita se ha creado correctamente',
         ]);
         return redirect()->route('admin.appointments.index');
 
-       
+
 
     }
 }

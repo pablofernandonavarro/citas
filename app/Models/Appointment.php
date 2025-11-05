@@ -20,9 +20,6 @@ class Appointment extends Model
 
     protected $casts = [
         'date' => 'date',
-        'status' => 'integer',
-    ];
-    protected $enumCasts = [
         'status' => AppointmentEnum::class,
     ];
 

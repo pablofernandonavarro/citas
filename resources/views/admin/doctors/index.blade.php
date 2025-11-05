@@ -10,7 +10,7 @@ title="Doctores" :breadcrumbs="[
 ]">
    
     <x-wireui-card>
-        {{-- Tabla de doctores --}}
+       
         @livewire("admin.datatables.doctor-table")
     </x-wireui-card>
 
