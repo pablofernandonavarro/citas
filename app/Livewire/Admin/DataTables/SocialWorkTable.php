@@ -19,19 +19,24 @@ class SocialWorkTable extends DataTableComponent
     {
         return [
             Column::make("Id", "id")
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
             Column::make("Name", "name")
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
             Column::make("Created at", "created_at")
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
             Column::make("Updated at", "updated_at")
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
            Column::make('Acciones')
                 ->label(function($row) {
                     return view('admin.socialworks.actions',
                      ['socialwork' => $row]);
-                }),
+                })
+                ->excludeFromColumnSelect(),
         ];
     }
 }

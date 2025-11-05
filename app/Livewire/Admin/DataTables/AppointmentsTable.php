@@ -24,25 +24,32 @@ class AppointmentsTable extends DataTableComponent
     {
         return [
             Column::make("Id", "id")
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
             Column::make("Patient", "patient.user.name")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->excludeFromColumnSelect(),
             Column::make("Doctor", "doctor.user.name")
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
             Column::make("Fecha", "date")
                 ->format(fn ($value) =>
                     $value->format('d/m/Y')
                 )
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
             Column::make("Hora", "start_time") 
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
             Column::make("Hora de fin", "end_time")
-                ->sortable(),
+                ->sortable()
+                ->excludeFromColumnSelect(),
              Column::make("Acciones")
                 ->label(function($row) {
                     return view('admin.appointments.actions', ['appointment' => $row]);
-                }),
+                })
+                ->excludeFromColumnSelect(),
            
         ];
     }
