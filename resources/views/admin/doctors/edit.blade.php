@@ -33,12 +33,19 @@
                     </div>
                 </div>
                 <div class="mt-6 lg:mt-0">
+                    <x-wireui-button primary type="button" gray>
+                        <a href="{{ route('admin.doctors.schedules', $doctor) }}">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            Horarios Disponibles
+                        </a>
+                    </x-wireui-button>
                     <x-wireui-button primary type="submit" blue>
-                        
+
                         <i class="fas fa-save mr-2"></i>
 
                         Guardar Cambios
                     </x-wireui-button>
+
                 </div>
             </div>
         </x-wireui-card>
@@ -63,22 +70,19 @@
                     value="{{ old('medical_license_number', $doctor->medical_license_number) }}" />
             </div>
             <div class="space-y-4">
-                <x-wireui-textarea 
-                label="Biografia" 
-                name="biography"
-                placeholder="Ingrese la biografía del Doctor">{{ old('biography', $doctor->biography) }}
-            </x-wireui-textarea>
+                <x-wireui-textarea label="Biografia" name="biography"
+                    placeholder="Ingrese la biografía del Doctor">{{ old('biography', $doctor->biography) }}
+                </x-wireui-textarea>
 
             </div>
             <div>
-                <x-wireui-native-select 
-                    label="Estado" 
-                    name="active"
-                    placeholder="Seleccione un estado">
-                    <option value="1" {{ old('active', $doctor->active) == '1' ? 'selected' : '' }}>Activo</option>
-                    <option value="0" {{ old('active', $doctor->active) == '0' ? 'selected' : '' }}>Inactivo</option>
+                <x-wireui-native-select label="Estado" name="active" placeholder="Seleccione un estado">
+                    <option value="1" {{ old('active', $doctor->active) == '1' ? 'selected' : '' }}>Activo
+                    </option>
+                    <option value="0" {{ old('active', $doctor->active) == '0' ? 'selected' : '' }}>Inactivo
+                    </option>
                 </x-wireui-native-select>
-               
+
             </div>
 
         </x-wireui-card>

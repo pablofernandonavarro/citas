@@ -12,7 +12,7 @@ title="Turnos" :breadcrumbs="[
         <x-wireui-button primary type="button" blue >
             <a href="{{ route('admin.appointments.create') }}">
                 <i class="fas fa-plus mr-2"></i>
-                Otorgar Turno
+                Nuevo Turno
             </a>
         </x-wireui-button>
     </x-slot>

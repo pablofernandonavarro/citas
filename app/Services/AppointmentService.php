@@ -54,12 +54,18 @@ class AppointmentService
                 $doctor->schedules,
                 $doctor->appointments
             );
-            return [
-                $doctor->id => [
-                    'doctor' => $doctor,
-                    'schedules' => $schedules,
-                ],
-            ];
+            // return [
+            //     $doctor->id => [
+            //         'doctor' => $doctor,
+            //         'schedules' => $schedules,
+            //     ],
+            // ];
+            return $schedules->contains('disabled', false) ?
+            [$doctor->id => [
+                'doctor' => $doctor,
+                'schedules' => $schedules,
+            ]] : [];
+            
         });
     }
     public function getAvailableSchedules($schedules, $appointments)
@@ -81,6 +87,6 @@ class AppointmentService
                 'start_time' => $schedule->start_time,
                 'disabled' => $isBooked,
             ];
-        })->toArray();
+        });
     }
 }
