@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Doctor;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class AppointmentService
 {
@@ -49,16 +50,37 @@ class AppointmentService
     public function processResults($doctors)
     {
         return $doctors->mapWithKeys(function ($doctor) {
+            $schedules = $this->getAvailableSchedules(
+                $doctor->schedules,
+                $doctor->appointments
+            );
             return [
                 $doctor->id => [
                     'doctor' => $doctor,
-                    'schedules' => $doctor->schedules->map(function ($schedule) {
-                        return [
-                            'start_time' => $schedule->start_time, // Ya es string H:i:s
-                        ];
-                    })->toArray(),
+                    'schedules' => $schedules,
                 ],
             ];
         });
+    }
+    public function getAvailableSchedules($schedules, $appointments)
+    {
+        return $schedules->map(function ($schedule) use ($appointments) {
+            // Verificar si este horario está ocupado por alguna cita
+            $isBooked = $appointments->contains(function ($appointment) use ($schedule) {
+                // Parsear solo los tiempos (sin fechas)
+                $scheduleTime = $schedule->start_time; // Ya es string 'HH:MM:SS'
+                $appointmentStart = $appointment->start_time; // Ya es string 'HH:MM:SS'
+                $appointmentEnd = $appointment->end_time; // Ya es string 'HH:MM:SS'
+                
+                // Un horario está ocupado si el schedule.start_time está entre
+                // appointment.start_time y appointment.end_time (excluyendo el fin)
+                return $scheduleTime >= $appointmentStart && $scheduleTime < $appointmentEnd;
+            });
+
+            return [
+                'start_time' => $schedule->start_time,
+                'disabled' => $isBooked,
+            ];
+        })->toArray();
     }
 }

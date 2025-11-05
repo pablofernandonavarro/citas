@@ -10,7 +10,7 @@ return [
         // 6 => 'sábado',
         // 0 => 'domingo',
     ],
-    'appointments_duration' => 15,
+    'appointments_duration' => 20,
     'start_time' => '08:00:00',
     'end_time' => '16:00:00',
     
