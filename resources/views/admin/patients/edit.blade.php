@@ -9,12 +9,7 @@
     ],
 ]">
     <x-slot name="action">
-        <x-wireui-button primary type="button" blue>
-            <a href="{{ route('admin.patients.index') }}">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Volver a Pacientes
-            </a>
-        </x-wireui-button>
+
     </x-slot>
     <form action="{{ route('admin.patients.update', $patient) }}" method="POST">
         @csrf
@@ -31,14 +26,20 @@
                         <p class="text-sm font-semibold text-gray-500">N° obra Social:
                             {{ $patient->medical_record_number ?? 'No disponible' }}</p>
                         <p class="text-sm font-semibold text-gray-500">DNI:
-                            {{ $patient->user->dni?? 'No disponible' }}</p>
+                            {{ $patient->user->dni ?? 'No disponible' }}</p>
 
                     </div>
                 </div>
                 <div class="mt-6 lg:mt-0">
+                    <x-wireui-button gray type="button" default>
+                        <a href="{{ route('admin.patients.index') }}">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Volver a Pacientes
+                        </a>
+                    </x-wireui-button>
                     <x-wireui-button primary type="submit" blue>
                         <i class="fas fa-edit mr-2"></i>
-                        Editar Paciente
+                        Guardar cambios
                     </x-wireui-button>
                 </div>
             </div>

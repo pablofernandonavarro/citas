@@ -67,4 +67,9 @@ class AppointmentController extends Controller
         $appointment->delete();
         return redirect()->route('appointments.index');
     }
+
+    public function consultation(Appointment $appointment)
+    {
+        return view('admin.appointments.consultation', compact('appointment'));
+    }
 }

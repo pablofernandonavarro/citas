@@ -46,12 +46,12 @@ class AppointmentManager extends Component
     {
         $this->specialities = Speciality::all();
         $this->search['date'] = now()->hour >= 12
-         ? now()->addDay()->format('Y-m-d')
-         : now()->format('Y-m-d');
+            ? now()->addDay()->format('Y-m-d')
+            : now()->format('Y-m-d');
 
-         if($this->appointmentEdit){
+        if ($this->appointmentEdit) {
             $this->appointment['patient_id'] = $this->appointmentEdit->patient_id;
-         }
+        }
     }
 
     public function updated($property, $value)
@@ -75,7 +75,7 @@ class AppointmentManager extends Component
     public function doctorName()
     {
         return $this->appointment['doctor_id']
-        ? $this->availabilities->firstWhere('doctor.id', $this->appointment['doctor_id'])['doctor']['user']['name'] : 'Por Definir';
+            ? $this->availabilities->firstWhere('doctor.id', $this->appointment['doctor_id'])['doctor']['user']['name'] : 'Por Definir';
     }
 
     public function fillAppointment($selectedSchedules)
@@ -112,8 +112,9 @@ class AppointmentManager extends Component
             'search.hour' => [
                 'required',
                 'date_format:H:i:s',
-                Rule::when($this->search['date'] === now()->format('Y-m-d'),
-                    ['after_or_equal:'.now()->format('H:i:s')]
+                Rule::when(
+                    $this->search['date'] === now()->format('Y-m-d'),
+                    ['after_or_equal:' . now()->format('H:i:s')]
                 ),
             ],
             'search.speciality_id' => 'nullable|exists:specialities,id',
@@ -123,7 +124,8 @@ class AppointmentManager extends Component
         $this->availabilities = $Service->searchAvailability(...$this->search);
 
     }
-    public function save(){
+    public function save()
+    {
         $this->validate([
             'appointment.patient_id' => 'required|exists:patients,id',
             'appointment.doctor_id' => 'required|exists:doctors,id',
@@ -133,7 +135,7 @@ class AppointmentManager extends Component
             'appointment.duration' => 'required|integer|min:15',
             'appointment.reason' => 'nullable|string|max:500',
         ]);
-        if ($this->appointmentEdit){
+        if ($this->appointmentEdit) {
             $this->appointmentEdit->update($this->appointment);
             $this->dispatch('swal', [
                 'icon' => 'success',
@@ -150,9 +152,9 @@ class AppointmentManager extends Component
         // - La nueva cita termina después de que empiece la existente
         $existingAppointment = Appointment::where('doctor_id', $this->appointment['doctor_id'])
             ->whereDate('date', $this->appointment['date'])
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('start_time', '<', $this->appointment['end_time'])
-                      ->where('end_time', '>', $this->appointment['start_time']);
+                    ->where('end_time', '>', $this->appointment['start_time']);
             })
             ->exists();
 
@@ -166,12 +168,14 @@ class AppointmentManager extends Component
         }
 
         //guardar la cita
-      Appointment::create($this->appointment);
+        Appointment::create($this->appointment)
+            ->consultation()
+            ->create([]);
 
-        session()->flash('swal',[
-          'icon' => 'success',
-          'title' => 'Cita creada con exito',
-          'text' => 'La cita se ha creado correctamente',
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Cita creada con exito',
+            'text' => 'La cita se ha creado correctamente',
         ]);
         return redirect()->route('admin.appointments.index');
 

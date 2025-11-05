@@ -4,6 +4,12 @@
             <icon class="fa-solid fa-pen-to-square" />
         </x-wireui-button>
     </a>
-   
-   
+   <x-wireui-button
+        href="{{ route('admin.appointments.consultation', $appointment) }}"
+        green
+        type="button"
+        xs>
+        <icon class="fa-solid fa-stethoscope" />
+    </x-wireui-button>
+
 </div>
