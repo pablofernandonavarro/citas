@@ -12,6 +12,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 use App\Models\Appointment;
 
+
 class AppointmentManager extends Component
 {
 

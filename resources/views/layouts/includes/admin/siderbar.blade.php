@@ -14,10 +14,10 @@
             'ico' => 'fa-solid fa-shield-halved',
             'href' => route('admin.roles.index'),
             'active' => request()->routeIs('admin.roles.*'),
-            
-            
+
+
         ],
-     
+
         [
             'name' => 'Usuarios',
             'ico' => 'fa-solid fa-users',
@@ -32,7 +32,7 @@
         ],
          [
              'name' => 'obras sociales',
-             'ico' => 'fa-solid fa-calendar-check',
+             'ico' => 'fa-solid fa-hand-holding-medical',
              'href' => route('admin.socialworks.index'),
              'active' => request()->routeIs('admin.socialworks.*'),
         ],
@@ -44,12 +44,18 @@
             ],
         [
             'name' => 'Turnos',
-            'ico' => 'fa-solid fa-calendar-days',
+            'ico' => 'fa-solid fa-calendar-check',
             'href' => route('admin.appointments.index'),
             'active' => request()->routeIs('admin.appointments.*'),
         ],
-    ];      
-    
+        [
+            'name' => 'Calendario',
+            'ico' => 'fa-solid fa-calendar-days',
+            'href' => route('admin.calendar.index'),
+            'active' => request()->routeIs('admin.calendar.*'),
+        ],
+    ];
+
 @endphp
 
 <aside id="logo-sidebar"

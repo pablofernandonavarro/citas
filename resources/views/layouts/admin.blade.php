@@ -52,7 +52,7 @@
 
 
     <div class="p-4 sm:ml-64">
-        <div class="mt-14">
+        <div class="mt-14 overflow-x-hidden">
 
             <div class="flex items-center justify-between mb-4">
                 <div>

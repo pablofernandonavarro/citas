@@ -14,11 +14,6 @@ title="Turnos" :breadcrumbs="[
 
 ]">
 
-    <x-wireui-card>
-        @livewire('admin.Consultation-Manager', ['appointment' => $appointment],)
-
-    </x-wireui-card>
-
-
+    @livewire('admin.Consultation-Manager', ['appointment' => $appointment],)
 
 </x-admin-layout>

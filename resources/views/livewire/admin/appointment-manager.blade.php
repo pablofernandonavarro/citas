@@ -31,7 +31,11 @@
                 </x-wireui-select>
             </div>
             <div class="lg:pt-6.5">
-                <x-wireui-button wire:click="searchAvailability" label="Buscar Disponibilidad" class="w-full" />
+                <x-wireui-button wire:click="searchAvailability"
+                 label="Buscar Disponibilidad"
+                 class="w-full"
+                 :disabled="$appointmentEdit && !$appointmentEdit->status->isEditable()"
+                />
             </div>
         </div>
     </x-wireui-card>

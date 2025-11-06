@@ -12,6 +12,7 @@ class ConsultationManager extends Component
 
     public Appointment $appointment;
     public Consultation $consultation;
+    public ?Consultation $lastConsultation;
     public Patient $patient;
     public $form = [
         'diagnosis' => '',
@@ -31,6 +32,10 @@ class ConsultationManager extends Component
             'prescriptions' => $this->consultation->prescriptions ?? [],
         ];
         $this->patient = $appointment->patient;
+        $this->lastConsultation = Consultation::whereHas('appointment', function ($query) use ($appointment) {
+            $query->where('patient_id', $appointment->patient_id)
+                  ->where('id', '!=', $this->consultation->id ?? 0);
+        })->latest()->first();
     }
 
     public function addPrescription()

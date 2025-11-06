@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AppointmentsTable extends DataTableComponent
 {
-     public function builder(): Builder
-     {
-             return Appointment::query()
-                  ->with('patient.user', 'doctor.user');
-     }
+    public function builder(): Builder
+    {
+        return Appointment::query()
+            ->with('patient.user', 'doctor.user');
+    }
 
     public function configure(): void
     {
@@ -26,7 +26,7 @@ class AppointmentsTable extends DataTableComponent
             Column::make("Id", "id")
                 ->sortable()
                 ->excludeFromColumnSelect(),
-            Column::make("Patient", "patient.user.name")
+            Column::make("Paciente", "patient.user.name")
                 ->sortable()
                 ->searchable()
                 ->excludeFromColumnSelect(),
@@ -34,23 +34,30 @@ class AppointmentsTable extends DataTableComponent
                 ->sortable()
                 ->excludeFromColumnSelect(),
             Column::make("Fecha", "date")
-                ->format(fn ($value) =>
+                ->format(
+                    fn($value) =>
                     $value->format('d/m/Y')
                 )
                 ->sortable()
                 ->excludeFromColumnSelect(),
-            Column::make("Hora", "start_time") 
+            Column::make("Hora", "start_time")
                 ->sortable()
                 ->excludeFromColumnSelect(),
+
             Column::make("Hora de fin", "end_time")
                 ->sortable()
                 ->excludeFromColumnSelect(),
-             Column::make("Acciones")
-                ->label(function($row) {
+            Column::make("Estado", "status")
+                ->format(function ($value, $row) {
+                    return $row->status->label();
+                })
+                ->excludeFromColumnSelect(),
+            Column::make("Acciones")
+                ->label(function ($row) {
                     return view('admin.appointments.actions', ['appointment' => $row]);
                 })
                 ->excludeFromColumnSelect(),
-           
+
         ];
     }
 }

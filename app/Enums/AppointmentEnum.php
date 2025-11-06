@@ -24,5 +24,9 @@ enum AppointmentEnum: int
             self::CANCELED => 'red',
         };
     }
+    public function isEditable(): bool
+    {
+        return  $this === self::SCHEDULED;
+    }
 
 }
