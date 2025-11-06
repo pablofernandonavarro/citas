@@ -9,7 +9,7 @@
                 <div>
                     <p class="text-2xl font-semibold text-gray-800">{{ $appointment->patient->user->name }}</p>
                     <p class="text-sm font-semibold text-gray-500">N° obra Social:
-                        {{ $appointment->medical_record_number ?? 'No disponible' }}</p>
+                        {{ $appointment->patient->medical_record_number ?? 'No disponible' }}</p>
                     <p class="text-sm font-semibold text-gray-500">DNI:
                         {{ $appointment->patient->user->dni ?? 'No disponible' }}</p>
 
@@ -19,7 +19,7 @@
 
             <div class="mt-6 lg:mt-0">
 
-                <x-wireui-button outline gray sm>
+                <x-wireui-button outline gray sm x-on:click="$openModal('seeHistoryModal')">
                     <i class="fa-solid fa-notes-medical"></i>
                     Ver Historial
                 </x-wireui-button>
@@ -114,5 +114,105 @@
 
 
     </x-wireui-card>
+
+
+    {{-- modal historial paciente --}}
+    <x-wireui-modal name="seeHistoryModal" max-width="7xl">
+        <x-wireui-card>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                    <i class="fa-solid fa-file-medical text-indigo-600 mr-2"></i>
+                    Historial Médico
+                </h2>
+                <p class="text-gray-600">{{ $appointment->patient->user->name }}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Obra Social -->
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-id-card text-blue-600 text-xl mr-3 mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Obra Social</p>
+                            <p class="text-gray-700">{{ $patient->socialWork->name ?? 'No especificado' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alergias -->
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-triangle-exclamation text-red-600 text-xl mr-3 mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Alergias</p>
+                            <p class="text-gray-700">{{ $patient->allergies ?: 'No registradas' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condiciones Crónicas -->
+                <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-heartbeat text-orange-600 text-xl mr-3 mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Condiciones Crónicas</p>
+                            <p class="text-gray-700">{{ $patient->chronic_conditions ?: 'Ninguna registrada' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condiciones Genéticas -->
+                <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-dna text-purple-600 text-xl mr-3 mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Condiciones Genéticas</p>
+                            <p class="text-gray-700">{{ $patient->genetic_conditions ?: 'Ninguna registrada' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Antecedentes Quirúrgicos -->
+                <div class="bg-teal-50 border-l-4 border-teal-500 p-4 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-user-doctor text-teal-600 text-xl mr-3 mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Antecedentes Quirúrgicos</p>
+                            <p class="text-gray-700">{{ $patient->surgeries_history ?: 'Ninguno registrado' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Otras Condiciones -->
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-clipboard-list text-yellow-600 text-xl mr-3 mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Otras Condiciones</p>
+                            <p class="text-gray-700">{{ $patient->other_conditions ?: 'Ninguna registrada' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial Familiar - Ocupa 2 columnas -->
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg md:col-span-2">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-users text-green-600 text-xl mr-3 mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Historial Familiar</p>
+                            <p class="text-gray-700">{{ $patient->family_history ?: 'No registrado' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <x-slot name="footer" class="flex justify-between items-center">
+                <a href="{{ route('admin.patients.edit', $patient->id) }}" target="_blank">
+                    <x-wireui-button outline secondary label="Editar Paciente" icon="pencil" />
+                </a>
+                <x-wireui-button flat label="Cerrar" x-on:click="close" />
+            </x-slot>
+        </x-wireui-card>
+    </x-wireui-modal>
 
 </div>

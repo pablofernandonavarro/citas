@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Appointment;
 use App\Models\Consultation;
+use App\Models\Patient;
 use Livewire\Component;
 
 class ConsultationManager extends Component
@@ -11,6 +12,7 @@ class ConsultationManager extends Component
 
     public Appointment $appointment;
     public Consultation $consultation;
+    public Patient $patient;
     public $form = [
         'diagnosis' => '',
         'treatment' => '',
@@ -28,6 +30,7 @@ class ConsultationManager extends Component
             'notes' => $this->consultation->notes ?? '',
             'prescriptions' => $this->consultation->prescriptions ?? [],
         ];
+        $this->patient = $appointment->patient;
     }
 
     public function addPrescription()

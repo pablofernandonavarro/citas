@@ -21,14 +21,14 @@ class SocialWorkTable extends DataTableComponent
             Column::make("Id", "id")
                 ->sortable()
                 ->excludeFromColumnSelect(),
-            Column::make("Name", "name")
+            Column::make("Nombre", "name")
                 ->searchable()
                 ->sortable()
                 ->excludeFromColumnSelect(),
-            Column::make("Created at", "created_at")
+            Column::make("Creado en", "created_at")
                 ->sortable()
                 ->excludeFromColumnSelect(),
-            Column::make("Updated at", "updated_at")
+            Column::make("Actualizado en", "updated_at")
                 ->sortable()
                 ->excludeFromColumnSelect(),
            Column::make('Acciones')
