@@ -8,11 +8,10 @@ use App\Http\Controllers\Admin\SocialWorkController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\DashboardContoller;
 use App\Models\Appointment;
 
-Route::get('/', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
+Route::get('/', [DashboardContoller::class, 'index'])->name('dashboard');
 
 // Gestion de roles
 Route::resource('roles', RoleController::class);

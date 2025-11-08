@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
 use App\Models\Speciality;
+use Illuminate\Support\Facades\Gate;
 
 class DoctorController extends Controller
 {
    
     public function index()
-    {
+    {   
+        Gate::authorize('read_doctor');
         return view('admin.doctors.index');
     }
 
@@ -26,7 +28,8 @@ class DoctorController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Doctor $doctor)
-    {  
+    {   
+        Gate::authorize('update_doctor');
         $specialities = Speciality::all();
 
         return view('admin.doctors.edit', compact('doctor', 'specialities'));
@@ -36,7 +39,8 @@ class DoctorController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Doctor $doctor)
-    {
+    {   
+        Gate::authorize('update_doctor');
         $data = $request->validate([
             'speciality_id' => 'required|exists:specialities,id',
             'medical_license_number' => 'nullable|string|max:255|unique:doctors,medical_license_number,' . $doctor->id,
