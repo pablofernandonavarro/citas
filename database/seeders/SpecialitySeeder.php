@@ -14,16 +14,17 @@ class SpecialitySeeder extends Seeder
     public function run(): void
     {
         $especilities = [
-            'Cardiology',
-            'Dermatology',
-            'Neurology',
-            'Pediatrics',
-            'Psychiatry',
-            'Oncology',
-            'Gynecology',
-            'Orthopedics',
-            'Radiology',
-            'Urology'
+            'Cardiología',
+            'Dermatología',
+            'Neurología',
+            'Pediatría',
+            'Psiquiatría',
+            'Oncología',
+            'Ginecología',
+            'Ortopedia',
+            'Radiología',
+            'Urología',
+            'Kinesiología'
         ];
 
         foreach ($especilities as $especiality) {
