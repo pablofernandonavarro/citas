@@ -5,12 +5,15 @@
     ],
 ]">
     <x-slot name="action">
-        <x-wireui-button primary type="button" blue >
-            <a href="{{ route('admin.roles.create') }}">
-                <i class="fas fa-plus mr-2"></i>
-                Crear Rol
-            </a>
-        </x-wireui-button>
+
+        @can('create_role')
+            <x-wireui-button primary type="button" blue>
+                <a href="{{ route('admin.roles.create') }}">
+                    <i class="fas fa-plus mr-2"></i>
+                    Crear Rol
+                </a>
+            </x-wireui-button>
+        @endcan
     </x-slot>
 
     @livewire('admin.datatables.role-table')

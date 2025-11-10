@@ -1,14 +1,15 @@
 <?php
 
 namespace  App\Services\Siderbar;
+use Illuminate\Support\Facades\Gate;
 
 class itemHeader implements itemSiderbar
-{    
-   
-    private string $title;
-    private array $can;
+{
 
- 
+    private string $title;
+    private array $can ;
+
+
     public function __construct($title,$can)
     {
         $this->title = $title;
@@ -26,7 +27,11 @@ class itemHeader implements itemSiderbar
 
       public function authorize() :bool
       {
-       return true;
+
+
+       return count($this->can)
+          ? Gate::any($this->can)
+          : true;
       }
 
 }

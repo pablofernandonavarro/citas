@@ -22,9 +22,18 @@ class AppointmentService
                 ->where('start_time', '>=', $hourStart)
                 ->where('start_time', '<', $hourEnd);
 
-        })->when($speciality_id, function ($query, $speciality_id) {
-            return $query->where('speciality_id', $speciality_id);
         })
+            ->whereHas('user', function ($querry) {
+                $querry->whereHas('roles', function($q) {
+                    $q->where('name', 'doctor');
+                });
+            })
+
+
+
+            ->when($speciality_id, function ($query, $speciality_id) {
+                return $query->where('speciality_id', $speciality_id);
+            })
             ->with([
                 'user',
                 'speciality',
@@ -61,11 +70,13 @@ class AppointmentService
             //     ],
             // ];
             return $schedules->contains('disabled', false) ?
-            [$doctor->id => [
-                'doctor' => $doctor,
-                'schedules' => $schedules,
-            ]] : [];
-            
+                [
+                    $doctor->id => [
+                        'doctor' => $doctor,
+                        'schedules' => $schedules,
+                    ]
+                ] : [];
+
         });
     }
     public function getAvailableSchedules($schedules, $appointments)
@@ -77,7 +88,7 @@ class AppointmentService
                 $scheduleTime = $schedule->start_time; // Ya es string 'HH:MM:SS'
                 $appointmentStart = $appointment->start_time; // Ya es string 'HH:MM:SS'
                 $appointmentEnd = $appointment->end_time; // Ya es string 'HH:MM:SS'
-                
+
                 // Un horario está ocupado si el schedule.start_time está entre
                 // appointment.start_time y appointment.end_time (excluyendo el fin)
                 return $scheduleTime >= $appointmentStart && $scheduleTime < $appointmentEnd;

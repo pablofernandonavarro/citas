@@ -11,8 +11,9 @@ class AppointmentsTable extends DataTableComponent
 {
     public function builder(): Builder
     {
-        return Appointment::query()
+       return  Appointment::query()
             ->with('patient.user', 'doctor.user');
+
     }
 
     public function configure(): void

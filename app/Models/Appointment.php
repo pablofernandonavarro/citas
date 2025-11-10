@@ -4,7 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\AppointmentEnum;
+use App\Models\Scopes\VerifyRole;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
+#[ScopedBy([VerifyRole::class])]
 class Appointment extends Model
 {
     protected $fillable = [
@@ -22,6 +25,10 @@ class Appointment extends Model
         'date' => 'date',
         'status' => AppointmentEnum::class,
     ];
+
+    // Scopes
+
+
 
 
     public function patient()

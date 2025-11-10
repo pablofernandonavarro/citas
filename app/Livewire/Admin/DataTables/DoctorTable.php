@@ -13,8 +13,7 @@ class DoctorTable extends DataTableComponent
 
     public function builder(): Builder
      {
-             return Doctor::query()
-                  ->with('user');
+             return Doctor::query()->with('user');
      }
 
     public function configure(): void
@@ -28,7 +27,7 @@ class DoctorTable extends DataTableComponent
               Column::make("Id", "id")
                 ->sortable(),
             Column::make("Nombre", "user.name")
-            ->searchable()    
+            ->searchable()
             ->sortable(),
             Column::make("DNI", "user.dni")
                 ->sortable(),

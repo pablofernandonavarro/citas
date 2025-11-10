@@ -15,7 +15,7 @@ class Consultation extends Model
     ];
 
     protected $casts = [
-        'prescriptions' => 'json',
+        'prescriptions' => 'array',
     ];
 
     public function appointment()

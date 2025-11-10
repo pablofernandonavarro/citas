@@ -31,3 +31,4 @@ Route::resource('patients', PatientController::class)->only(['index', 'edit', 'u
  Route::resource('appointments', AppointmentController::class);
 
  Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
+ 

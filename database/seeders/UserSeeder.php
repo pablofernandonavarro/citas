@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
         ]);
         $user->assignRole('Doctor');
         $user->doctor()->create([
-            
+
             'medical_license_number' => '123456789',
             'biography' => 'Especialista en cardiología con 10 años de experiencia.',
         ]);
@@ -44,12 +44,13 @@ class UserSeeder extends Seeder
             'name' => 'olga Aranda',
             'email' => 'olga@gmail.com',
             'password' => bcrypt('12345678'),
-            'dni' => '24448030',
+            'dni' => '24448034',
             'phone' => '1569975132',
             'address' => 'moseñor larumbe 3151 dto 1102',
 
         ]);
         $user->assignRole('Paciente');
+        $user->patient()->create([]);
 
 
     }

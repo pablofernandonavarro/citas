@@ -1,22 +1,32 @@
-<?php 
+<?php
   return  [
-        [   
+        [
             'type' => 'link',
             'title' => 'Dashboard',
             'icon' => 'fa-solid fa-gauge',
             'route' => 'admin.dashboard',
             'active' => 'admin.dashboard',
+            'can'=> ['access_dashboard'],
         ],
-        [    
+        [
             'type' => 'header',
             'title' => 'Gestión',
+            'can'=>[
+                'read_role',
+                'read_user',
+                'read_patient',
+                'read_socialWork',
+                'read_appointment',
+                'read_calendar',
+            ],
         ],
-        [   
+        [
             'type' => 'link',
             'title' => 'Roles y permisos',
             'icon' => 'fa-solid fa-shield-halved',
             'route' => 'admin.roles.index',
             'active' => 'admin.roles.*',
+            'can'=>['read_role'],
 
 
         ],
@@ -27,13 +37,15 @@
             'icon' => 'fa-solid fa-users',
             'route' => 'admin.users.index',
             'active' =>'admin.users.*',
-        ],
+            'can'=> ['read_user'],
+         ],
         [
             'type' => 'link',
             'title' => 'Pacientes',
             'icon' => 'fa-solid fa-user-injured',
             'route' => 'admin.patients.index',
             'active' => 'admin.patients.*',
+            'can' => ['read_patient'],
         ],
          [
             'type' => 'link',
@@ -41,6 +53,7 @@
              'icon' => 'fa-solid fa-hand-holding-medical',
              'route' => 'admin.socialworks.index',
              'active' => 'admin.socialworks.*',
+             'can' => ['read_socialWork'],
         ],
             [
                 'type' => 'link',
@@ -48,6 +61,7 @@
                 'icon' => 'fa-solid fa-user-doctor',
                 'route' => 'admin.doctors.index',
                 'active' =>'admin.doctors.*',
+                'can'=>['read_doctor'],
             ],
         [
             'type' => 'link',
@@ -55,6 +69,7 @@
             'icon' => 'fa-solid fa-calendar-check',
             'route' => 'admin.appointments.index',
             'active' => 'admin.appointments.*',
+            'can'=> ['read_appointment'],
         ],
         [
             'type' => 'link',
@@ -62,5 +77,6 @@
             'icon' => 'fa-solid fa-calendar-days',
             'route' => 'admin.calendar.index',
             'active' =>'admin.calendar.*',
+            'can'=> ['read_calendar'],
         ],
     ];

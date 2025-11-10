@@ -30,7 +30,12 @@ class PermissionSeeder extends Seeder
 
             'read_patient',
             'update_patient',
-              
+
+            'read_socialwork',
+            'create_socialwork',
+            'updtae_socialwork',
+            'delete_socialwork',
+
             'read_doctor',
             'update_doctor',
 
@@ -44,7 +49,7 @@ class PermissionSeeder extends Seeder
 
 
 
-            
+
         ];
 
         foreach($permissions as $permission) {

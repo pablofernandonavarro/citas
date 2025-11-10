@@ -2,17 +2,19 @@
 
 namespace  App\Services\Siderbar;
 use App\Services\Siderbar\itemSiderbar;
+use Illuminate\Support\Facades\Gate;
+
 
 class itemLink implements itemSiderbar
-{    
-   
+{
+
     private string $title;
     private string $icon;
     private string $href;
     private string $active;
-    private array $can;
+    private array $can ;
 
- 
+
 public function __construct(string $title,string $icon,string $href,bool $active,array $can)
 {
     $this->title = $title;
@@ -21,11 +23,11 @@ public function __construct(string $title,string $icon,string $href,bool $active
     $this->active = $active;
     $this->can = $can;
 }
-    
+
 
 
      public function render() :string
-     { 
+     {
          $activeClass= $this->active ? 'bg-gray-100 dark:bg-gray-700':'';
     return <<<HTML
     <a href="{$this->href}"
@@ -36,13 +38,15 @@ public function __construct(string $title,string $icon,string $href,bool $active
                                 <span class="ms-3">{$this->title}</span>
                             </a>
     HTML;
-    
+
      }
 
 
       public function authorize() :bool
       {
-       return true;
+       return count($this->can)
+          ? Gate::any($this->can)
+          : true;
       }
 
 }
