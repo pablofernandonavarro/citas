@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AppointmentEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
@@ -75,8 +76,15 @@ class AppointmentController extends Controller
     public function destroy(Appointment $appointment)
     {
         Gate::authorize('delete_appointment');
-        $appointment->delete();
-        return redirect()->route('appointments.index');
+        $appointment->status = AppointmentEnum::CANCELED;
+        $appointment->save();
+        session()->flash('swal',[
+              'icon' => 'success',
+              'title' => '¡Éxito!',
+              'text' => 'el Turno fue Cancelado',
+        ]);
+
+        return view('admin.appointments.edit', compact('appointment'));
     }
 
     public function consultation(Appointment $appointment)
