@@ -13,26 +13,46 @@
 
 
     <x-slot name="action">
-        <form action="{{ route('admin.appointments.destroy',$appointment) }}" method="post">
-            @csrf
-            @method('delete')
-
-
-            <x-wireui-button red type="submit" sm>
-                Cancelar Turno
-            </x-wireui-button>
-        </form>
+        <div class="flex gap-2">
+            @if($appointment->status->value === 3)
+                {{-- Si el turno está cancelado, mostrar botón para liberar --}}
+                <form action="{{ route('admin.appointments.release', $appointment) }}" method="post">
+                    @csrf
+                    <x-wireui-button yellow type="submit" sm>
+                        Liberar Turno
+                    </x-wireui-button>
+                </form>
+            @endif
+            
+            @if($appointment->status->isEditable())
+                <form action="{{ route('admin.appointments.destroy',$appointment) }}" method="post">
+                    @csrf
+                    @method('delete')
+                    <x-wireui-button red type="submit" sm>
+                        Cancelar Turno
+                    </x-wireui-button>
+                </form>
+            @endif
+        </div>
     </x-slot>
 
     <x-wireui-card class="mb-4">
         <div class="flex items-center justify-between">
             <div>
-                <p>
-                    Editar Turno para :
-                    <span class="font-semibold  text-indigo-600">
-                        {{ $appointment->patient->user->name }}
-                    </span>
-                </p>
+                @if($appointment->patient)
+                    <p>
+                        Editar Turno para :
+                        <span class="font-semibold  text-indigo-600">
+                            {{ $appointment->patient->user->name }}
+                        </span>
+                    </p>
+                @else
+                    <p>
+                        <span class="font-semibold text-yellow-600">
+                            Turno Disponible (Sin paciente asignado)
+                        </span>
+                    </p>
+                @endif
                 <p class="text-sm text-slate-500">
                     <span> Fecha del turno:</span>
                     <span class="text-slate-900">{{ $appointment->date->format('d/m/Y') }} a las</span>
@@ -52,9 +72,21 @@
 
     @if ($appointment->status->isEditable())
         @livewire('admin.appointment-manager', ['appointmentEdit' => $appointment])
+    @elseif($appointment->status->isAvailable())
+        <x-wireui-card>
+            <div class="text-center py-6">
+                <p class="text-lg font-semibold text-yellow-600 mb-2">Este turno está disponible</p>
+                <p class="text-sm text-gray-600 mb-4">Puede ser asignado a un nuevo paciente desde la lista de turnos disponibles</p>
+                <a href="{{ route('admin.appointments.available') }}">
+                    <x-wireui-button primary>
+                        Ver Turnos Disponibles
+                    </x-wireui-button>
+                </a>
+            </div>
+        </x-wireui-card>
     @else
         <x-wireui-card>
-            <p class="text-center">Este Turno a si completado o cancelado</p>
+            <p class="text-center">Este Turno ha sido completado o cancelado</p>
         </x-wireui-card>
     @endif
 

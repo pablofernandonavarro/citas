@@ -16,8 +16,9 @@ class DashboardContoller extends Controller
     {
         Gate::authorize('access_dashboard');
 
-        if (auth()->user()->hasRole(['Admin','Recepcionista'])) {
-            $data = [];
+        $data = [];
+
+        if (auth()->user()->hasRole(['Admin', 'Recepcionista'])) {
             $data['total_patients'] = Patient::count();
             $data['total_doctors'] = Doctor::count();
             $data['appointment_today'] = Appointment::whereDate('date', now()->toDateString())
@@ -28,37 +29,74 @@ class DashboardContoller extends Controller
                 ->get();
 
         }
-        if(auth()->user()->hasRole('Doctor')){
+        if (auth()->user()->hasRole('Doctor')) {
             $data['appointment_today_count'] = Appointment::whereDate('date', now()->toDateString())
-           ->where('status', AppointmentEnum::SCHEDULED)
-           ->whereHas('doctor',function($query){
-            $query->where('user_id',auth()->id());
-           })->count();   
-           $data['appointment_week_count'] =  Appointment::whereBetween('created_at', [now()->startOfWeek(),now()->endOfWeek()])
-           ->where('status', AppointmentEnum::SCHEDULED)
-           ->whereHas('doctor',function($query){
-            $query->where('user_id',auth()->id());
-           })->count(); 
+                ->where('status', AppointmentEnum::SCHEDULED)
+                ->whereHas('doctor', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })->count();
+            $data['appointment_week_count'] = Appointment::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                ->where('status', AppointmentEnum::SCHEDULED)
+                ->whereHas('doctor', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })->count();
 
-           $data['next_appointment'] = Appointment::where('status', AppointmentEnum::SCHEDULED)
-           ->whereDate('date', '>=', now())
-           ->where(function($query){
-            $query->whereTime('end_time','>=',now()->toTimeString());
-           })
-           ->whereHas('doctor',function($query){
-            $query->where('user_id',auth()->id());
-           })
-           ->orderBy('start_time')
-           ->first();
+            $data['next_appointment'] = Appointment::where('status', AppointmentEnum::SCHEDULED)
+                ->whereDate('date', '>=', now())
+                ->where(function ($query) {
+                    $query->whereTime('end_time', '>=', now()->toTimeString());
+                })
+                ->whereHas('doctor', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })
+                ->orderBy('start_time')
+                ->first();
 
-           $data['appointment_today'] = Appointment::whereDate('date', now()->toDateString())
-           ->where('status', AppointmentEnum::SCHEDULED)
-           ->whereHas('doctor',function($query){
-            $query->where('user_id',auth()->id());
-           })
-           ->with(['patient', 'doctor'])
-           ->orderBy('start_time')
-           ->get();
+            $data['appointment_today'] = Appointment::whereDate('date', now()->toDateString())
+                ->where('status', AppointmentEnum::SCHEDULED)
+                ->whereHas('doctor', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })
+                ->with(['patient', 'doctor'])
+                ->orderBy('start_time')
+                ->get();
+        }
+
+        if (auth()->user()->hasRole('Paciente')) {
+
+            $data['next_appointment'] = Appointment::where('status', AppointmentEnum::SCHEDULED)
+                ->where(function ($query) {
+                    $query->where('date', '>', now()->toDateString())
+                        ->orWhere(function ($q) {
+                            $q->whereDate('date', now()->toDateString())
+                              ->whereTime('start_time', '>=', now()->toTimeString());
+                        });
+                })
+                ->whereHas('patient', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })
+                ->with(['doctor.user', 'doctor.speciality'])
+                ->orderBy('date')
+                ->orderBy('start_time')
+                ->first();
+
+            $data['past_appointments'] = Appointment::whereIn('status', [AppointmentEnum::COMPLETED, AppointmentEnum::CANCELED])
+                ->where(function ($query) {
+                    $query->where('date', '<', now()->toDateString())
+                        ->orWhere(function ($q) {
+                            $q->whereDate('date', now()->toDateString())
+                              ->whereTime('end_time', '<', now()->toTimeString());
+                        });
+                })
+                ->whereHas('patient', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })
+                ->with(['doctor.user', 'doctor.speciality'])
+                ->orderBy('date', 'desc')
+                ->orderBy('start_time', 'desc')
+                ->take(10)
+                ->get();
+
         }
 
         return view('admin.dashboard', compact('data'));

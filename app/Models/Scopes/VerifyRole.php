@@ -24,8 +24,11 @@ class VerifyRole implements Scope
         }
 
         if (auth()->user()->hasRole('Paciente')) {
-            $builder->whereHas('patient', function ($q) {
-                $q->where('user_id', auth()->id());
+            $builder->where(function ($query) {
+                $query->whereHas('patient', function ($q) {
+                    $q->where('user_id', auth()->id());
+                })
+                ->orWhere('status', 4); // Incluir turnos disponibles (AVAILABLE)
             });
         }
     }

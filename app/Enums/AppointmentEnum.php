@@ -7,6 +7,7 @@ enum AppointmentEnum: int
     case SCHEDULED = 1;
     case COMPLETED = 2;
     case CANCELED = 3;
+    case AVAILABLE = 4;
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum AppointmentEnum: int
             self::SCHEDULED => 'Programado',
             self::COMPLETED => 'Completado',
             self::CANCELED => 'Cancelado',
+            self::AVAILABLE => 'Disponible',
         };
     }
     public function color(): string
@@ -22,11 +24,17 @@ enum AppointmentEnum: int
             self::SCHEDULED => 'blue',
             self::COMPLETED => 'green',
             self::CANCELED => 'red',
+            self::AVAILABLE => 'yellow',
         };
     }
     public function isEditable(): bool
     {
         return  $this === self::SCHEDULED;
+    }
+    
+    public function isAvailable(): bool
+    {
+        return $this === self::AVAILABLE;
     }
 
 }

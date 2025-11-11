@@ -27,6 +27,9 @@ Route::resource('patients', PatientController::class)->only(['index', 'edit', 'u
  Route::get('doctors/{doctor}/schedules', [DoctorController::class, 'schedules'])->name('doctors.schedules');
 
  Route::get('appointments/{appointment}/consultation', [AppointmentController::class, 'consultation'])->name('appointments.consultation');
+ Route::get('appointments-available', [AppointmentController::class, 'available'])->name('appointments.available');
+ Route::post('appointments/{appointment}/release', [AppointmentController::class, 'release'])->name('appointments.release');
+ Route::post('appointments/{appointment}/assign', [AppointmentController::class, 'assign'])->name('appointments.assign');
 
  Route::resource('appointments', AppointmentController::class);
 

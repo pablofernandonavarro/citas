@@ -136,6 +136,7 @@
                             </div>
                             <hr class="my-4">
                              <div class="space-y-6">
+                        @if(!$appointmentEdit &&  !auth()->user()->hasRole('Paciente'))
                              <x-wireui-select
                                 label="Paciente"
                                 placeholder="Selecciona un paciente"
@@ -150,6 +151,7 @@
                                 wire:model="appointment.reason"
                                 placeholder="Describe el motivo de la consulta"
                                 />
+                                @endif
 
                                 <x-wireui-button
                                     wire:click="save"
