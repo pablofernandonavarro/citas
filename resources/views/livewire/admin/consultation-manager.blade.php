@@ -7,6 +7,12 @@
                 {{ $appointment->patient->medical_record_number ?? 'No disponible' }}</p>
             <p class="text-sm font-semibold text-gray-500">DNI:
                 {{ $appointment->patient->user->dni ?? 'No disponible' }}</p>
+            <p class="text-sm font-semibold text-indigo-600 mt-2">
+                <i class="fa-solid fa-calendar-day mr-1"></i>
+                {{ $appointment->date->format('d/m/Y') }}
+                <i class="fa-solid fa-clock ml-3 mr-1"></i>
+                {{ $appointment->start_time }} - {{ $appointment->end_time }}
+            </p>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-2">
