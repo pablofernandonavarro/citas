@@ -35,10 +35,28 @@ Route::get('/patient', function (Request $request) {
         });
 })->name('api.patient');
 
-Route::get('/appointments', function (Request $request) {
-    $appointments = Appointment::with(['patient.user', 'doctor.user'])
-        ->whereBetween('date', [$request->start, $request->end])
-        ->get()
+Route::middleware(['web', 'auth'])->get('/appointments', function (Request $request) {
+    $query = Appointment::withoutGlobalScope(\App\Models\Scopes\VerifyRole::class)
+        ->with(['patient.user', 'doctor.user'])
+        ->whereBetween('date', [$request->start, $request->end]);
+    
+    // Filtrar según el rol del usuario autenticado
+    if (auth()->check()) {
+        if (auth()->user()->hasRole('Paciente')) {
+            // El paciente solo ve sus propias citas
+            $query->whereHas('patient', function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        } elseif (auth()->user()->hasRole('Doctor')) {
+            // El doctor solo ve sus propias citas
+            $query->whereHas('doctor', function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        }
+        // Admin y Recepcionista ven todas las citas (no se aplica filtro)
+    }
+    
+    $appointments = $query->get()
         ->map(function (Appointment $appointment) {
             return [
                 'id' => $appointment->id,
