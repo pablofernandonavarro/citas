@@ -20,13 +20,13 @@ class DashboardContoller extends Controller
         $data= [];
         $data['total_patients']= Patient::count();
         $data['total_doctors'] = Doctor::count();
-        $data['appointment_today'] = Appointment::whereBetween('created_at', now()->count())
+        $data['appointment_today'] = Appointment::whereDate('date', now()->toDateString())
         ->where('status', AppointmentEnum::SCHEDULED)
         ->count();
         $data['recent_user'] = User::latest()
         ->take(5)
         ->get();
-
+    
         return view('admin.dashboard',compact('data'));
     }
 }

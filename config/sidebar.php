@@ -15,7 +15,7 @@
                 'read_role',
                 'read_user',
                 'read_patient',
-                'read_socialWork',
+                'read_socialwork',
                 'read_appointment',
                 'read_calendar',
             ],
@@ -53,7 +53,7 @@
              'icon' => 'fa-solid fa-hand-holding-medical',
              'route' => 'admin.socialworks.index',
              'active' => 'admin.socialworks.*',
-             'can' => ['read_socialWork'],
+             'can' => ['read_socialwork'],
         ],
             [
                 'type' => 'link',

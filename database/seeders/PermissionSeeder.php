@@ -31,9 +31,10 @@ class PermissionSeeder extends Seeder
             'read_patient',
             'update_patient',
 
+            'access_socialwork',
             'read_socialwork',
             'create_socialwork',
-            'updtae_socialwork',
+            'update_socialwork',
             'delete_socialwork',
 
             'read_doctor',

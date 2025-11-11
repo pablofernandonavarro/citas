@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SocialWork;
+use Illuminate\Support\Facades\Gate;
 
 class SocialWorkController extends Controller
 {
@@ -13,6 +14,7 @@ class SocialWorkController extends Controller
      */
     public function index()
     {
+        Gate::authorize('access_socialwork');
         return view('admin.socialworks.index');
     }
 
