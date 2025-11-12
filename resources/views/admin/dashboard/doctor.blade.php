@@ -36,7 +36,7 @@
 
 
     </div>
-    <div class="grid lg:grid-cols-3 gap-6 mt-8 gap-8">
+    <div class="grid lg:grid-cols-3 gap-6 mt-8 ">
         <div>
             <x-wireui-card>
                 <p>
@@ -76,7 +76,7 @@
                 </p>
                 <ul class="mt-4 divide-y divide-gray-500">
                     @forelse ($data['appointment_today'] as $appointment)
-                        <li class="py-3 flex flex justify-between items-center">
+                        <li class="py-3 flex justify-between items-center">
                             <div>
                            <p>
                             {{ $appointment->patient->user->name }}

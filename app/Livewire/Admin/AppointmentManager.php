@@ -3,10 +3,13 @@
 namespace App\Livewire\Admin;
 
 use App;
+use App\Mail\AppointmentCreatedDoctor;
+use App\Mail\AppointmentCreatedPatient;
 use App\Models\Speciality;
 use App\Services\AppointmentService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -175,14 +178,24 @@ class AppointmentManager extends Component
         }
 
         //guardar la cita
-        Appointment::create($this->appointment)
-            ->consultation()
-            ->create([]);
+        $newAppointment = Appointment::create($this->appointment);
+        $newAppointment->consultation()->create([]);
+
+        // Cargar relaciones necesarias para los emails
+        $newAppointment->load(['patient.user', 'doctor.user', 'doctor.speciality']);
+
+        // Enviar email al paciente
+        Mail::to($newAppointment->patient->user->email)
+            ->send(new AppointmentCreatedPatient($newAppointment));
+
+        // Enviar email al doctor
+        Mail::to($newAppointment->doctor->user->email)
+            ->send(new AppointmentCreatedDoctor($newAppointment));
 
         session()->flash('swal', [
             'icon' => 'success',
             'title' => 'Cita creada con exito',
-            'text' => 'La cita se ha creado correctamente',
+            'text' => 'La cita se ha creado correctamente y se han enviado las notificaciones por email',
         ]);
         return redirect()->route('admin.appointments.index');
 
