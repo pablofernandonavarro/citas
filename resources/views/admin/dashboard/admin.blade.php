@@ -55,7 +55,7 @@
                      <x-wireui-button class="w-full" href="{{ route('admin.socialworks.index') }}">
                          Gestionar Obras Sociales
                      </x-wireui-button>
-                     <x-wireui-button class="w-full" href="{{ route('admin.socialworks.index') }}">
+                     <x-wireui-button class="w-full" href="{{ route('admin.specialities.index') }}">
                          Gestionar Especialidades
                      </x-wireui-button>
 

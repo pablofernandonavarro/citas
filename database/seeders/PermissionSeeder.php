@@ -37,6 +37,11 @@ class PermissionSeeder extends Seeder
             'update_socialwork',
             'delete_socialwork',
 
+            'access_speciality',
+            'create_speciality',
+            'update_speciality',
+            'delete_speciality',
+
             'read_doctor',
             'update_doctor',
 

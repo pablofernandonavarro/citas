@@ -5,10 +5,12 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\SocialWorkController;
+use App\Http\Controllers\Admin\SpecialityController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\DashboardContoller;
+use App\Http\Controllers\Admin\DoctorUnavailabilityController;
 use App\Models\Appointment;
 
 Route::get('/', [DashboardContoller::class, 'index'])->name('dashboard');
@@ -21,6 +23,8 @@ Route::resource('users', UserController::class);
 Route::resource('patients', PatientController::class)->only(['index', 'edit', 'update']);
 // gestion de obras sociales
  Route::resource('socialworks', SocialWorkController::class);
+// gestion de especialidades
+ Route::resource('specialities', SpecialityController::class);
 // gestion de doctores
  Route::resource('doctors', DoctorController::class)->only(['index', 'edit', 'update']);
 
@@ -34,4 +38,7 @@ Route::resource('patients', PatientController::class)->only(['index', 'edit', 'u
  Route::resource('appointments', AppointmentController::class);
 
  Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
+
+ // Gestion de períodos de bloqueo/vacaciones
+ Route::resource('unavailability', DoctorUnavailabilityController::class);
  

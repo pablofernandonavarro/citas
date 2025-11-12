@@ -16,6 +16,7 @@
                 'read_user',
                 'read_patient',
                 'read_socialwork',
+                'access_speciality',
                 'read_appointment',
                 'read_calendar',
             ],
@@ -55,6 +56,14 @@
              'active' => 'admin.socialworks.*',
              'can' => ['read_socialwork'],
         ],
+        [
+            'type' => 'link',
+            'title' => 'Especialidades',
+            'icon' => 'fa-solid fa-stethoscope',
+            'route' => 'admin.specialities.index',
+            'active' => 'admin.specialities.*',
+            'can' => ['access_speciality'],
+        ],
             [
                 'type' => 'link',
                 'title' => 'Doctores',
@@ -78,5 +87,13 @@
             'route' => 'admin.calendar.index',
             'active' =>'admin.calendar.*',
             'can'=> ['read_calendar'],
+        ],
+        [
+            'type' => 'link',
+            'title' => 'Períodos de Bloqueo',
+            'icon' => 'fa-solid fa-ban',
+            'route' => 'admin.unavailability.index',
+            'active' =>'admin.unavailability.*',
+            'can'=> ['read_doctor'],
         ],
     ];

@@ -28,6 +28,10 @@ class AppointmentService
                     $q->where('name', 'doctor');
                 });
             })
+            ->whereDoesntHave('unavailabilities', function ($query) use ($date) {
+                $query->where('start_date', '<=', $date->format('Y-m-d'))
+                    ->where('end_date', '>=', $date->format('Y-m-d'));
+            })
 
 
 
