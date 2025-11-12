@@ -132,18 +132,39 @@
         <p>Si necesita cancelar o reprogramar su cita, comuníquese con nosotros con al menos 24 horas de anticipación.
         </p>
 
-        <div class="button-container">
-
-            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode(config('app.name') . ' dirección') }}"
-                class="button button-secondary">Cómo Llegar</a>
-        </div>
+        <!-- Botones -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+            <tr>
+                <td align="center">
+                    <!-- Botón Ver mi Consulta -->
+                    <table cellpadding="0" cellspacing="0" style="display: inline-block; margin: 10px;">
+                        <tr>
+                            <td align="center" bgcolor="#4CAF50" style="border-radius: 5px;">
+                                <a href="{{ url(route('admin.appointments.show', $appointment, false)) }}" 
+                                   target="_blank"
+                                   style="display: inline-block; padding: 12px 30px; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 14px; font-family: Arial, sans-serif;">
+                                    Ver mi Consulta
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Botón Cómo Llegar -->
+                    <table cellpadding="0" cellspacing="0" style="display: inline-block; margin: 10px;">
+                        <tr>
+                            <td align="center" bgcolor="#2196F3" style="border-radius: 5px;">
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode(config('app.name') . ' dirección') }}" 
+                                   target="_blank"
+                                   style="display: inline-block; padding: 12px 30px; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 14px; font-family: Arial, sans-serif;">
+                                    Cómo Llegar
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
-    <button type="button"
-        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-        <a class=" "
-            href="{{ rtrim(config('app.url'), '/') . route('admin.appointments.show', $appointment, false) }}"
-            target="_blank" rel="noopener">Ver mi consulta</a>
-    </button>
+
 
     <div class="footer">
         <p>Este es un email automático, por favor no responda a este mensaje.</p>
