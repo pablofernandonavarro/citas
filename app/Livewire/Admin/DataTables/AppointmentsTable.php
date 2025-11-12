@@ -18,7 +18,8 @@ class AppointmentsTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setPrimaryKey('id');
+        $this->setPrimaryKey('id')
+            ->setColumnSelectStatus(true);
     }
 
     public function columns(): array
@@ -29,30 +30,42 @@ class AppointmentsTable extends DataTableComponent
                 ->excludeFromColumnSelect(),
             Column::make("Paciente", "patient.user.name")
                 ->sortable()
-                ->searchable()
-                ->excludeFromColumnSelect(),
+                ->searchable(),
             Column::make("Doctor", "doctor.user.name")
-                ->sortable()
-                ->excludeFromColumnSelect(),
+                ->sortable(),
             Column::make("Fecha", "date")
                 ->format(
                     fn($value) =>
                     $value->format('d/m/Y')
                 )
-                ->sortable()
-                ->excludeFromColumnSelect(),
+                ->sortable(),
             Column::make("Hora", "start_time")
-                ->sortable()
-                ->excludeFromColumnSelect(),
+                ->sortable(),
 
             Column::make("Hora de fin", "end_time")
-                ->sortable()
-                ->excludeFromColumnSelect(),
+                ->sortable(),
             Column::make("Estado", "status")
                 ->format(function ($value, $row) {
                     return $row->status->label();
                 })
-                ->excludeFromColumnSelect(),
+                ->searchable(function (Builder $query, $search) {
+                    $statusMap = [
+                        'programado' => 1,
+                        'completado' => 2,
+                        'cancelado' => 3,
+                        'disponible' => 4,
+                    ];
+                    
+                    $searchLower = mb_strtolower($search);
+                    
+                    foreach ($statusMap as $label => $value) {
+                        if (str_contains($label, $searchLower)) {
+                            return $query->orWhere('status', $value);
+                        }
+                    }
+                    
+                    return $query;
+                }),
             Column::make("Acciones")
                 ->label(function ($row) {
                     return view('admin.appointments.actions', ['appointment' => $row]);

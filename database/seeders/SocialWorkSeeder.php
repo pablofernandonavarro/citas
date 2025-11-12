@@ -15,10 +15,10 @@ class SocialWorkSeeder extends Seeder
     public function run(): void
     {
       $socialWorks = [
-          'Obra Social A',
-          'Obra Social B',
-          'Obra Social C',
-          'Obra Social D',
+          'Pami',
+          'Osde',
+          'opdea',
+          'Swiss Medical',
       ];
         foreach ($socialWorks as $name) {
             SocialWork::create([

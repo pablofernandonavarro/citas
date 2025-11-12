@@ -42,13 +42,17 @@ class DashboardContoller extends Controller
                 })->count();
 
             $data['next_appointment'] = Appointment::where('status', AppointmentEnum::SCHEDULED)
-                ->whereDate('date', '>=', now())
                 ->where(function ($query) {
-                    $query->whereTime('end_time', '>=', now()->toTimeString());
+                    $query->where('date', '>', now()->toDateString())
+                        ->orWhere(function ($q) {
+                            $q->whereDate('date', now()->toDateString())
+                              ->whereTime('start_time', '>=', now()->toTimeString());
+                        });
                 })
                 ->whereHas('doctor', function ($query) {
                     $query->where('user_id', auth()->id());
                 })
+                ->orderBy('date')
                 ->orderBy('start_time')
                 ->first();
 

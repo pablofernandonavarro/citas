@@ -40,7 +40,7 @@
         <div>
             <x-wireui-card>
                 <p>
-                    Proximo Turno para hoy en día:
+                    Proximo Turno :
                 </p>
                 <p>
                     @if ($data['next_appointment'])
@@ -81,8 +81,8 @@
                            <p>
                             {{ $appointment->patient->user->name }}
                            </p>
-                        <p> 
-                           
+                        <p>
+
                             {{ \Carbon\Carbon::parse($appointment->date)->format('d-m-Y') }} a las {{ \Carbon\Carbon::parse($appointment->start_time)->format('H:i') }}
                         </p>
                            </p>
