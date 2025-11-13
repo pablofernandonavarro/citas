@@ -11,6 +11,100 @@
     .fc-event{
         cursor : pointer;
     }
+    
+    /* Estilos responsivos para móvil */
+    @media (max-width: 768px) {
+        /* Ajustar encabezado del calendario */
+        .fc .fc-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .fc .fc-toolbar-chunk {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        /* Reducir tamaño del título */
+        .fc .fc-toolbar-title {
+            font-size: 1.2rem !important;
+            line-height: 1.4;
+        }
+        
+        /* Ajustar botones */
+        .fc .fc-button {
+            padding: 0.3rem 0.5rem !important;
+            font-size: 0.75rem !important;
+        }
+        
+        .fc .fc-button-group {
+            gap: 0.25rem;
+        }
+        
+        /* Ajustar días de la semana */
+        .fc .fc-col-header-cell {
+            font-size: 0.7rem !important;
+            padding: 0.25rem 0 !important;
+        }
+        
+        /* Reducir texto de las celdas de hora */
+        .fc .fc-timegrid-slot-label {
+            font-size: 0.65rem !important;
+        }
+        
+        /* Ajustar eventos */
+        .fc .fc-event {
+            font-size: 0.7rem !important;
+            padding: 1px 2px !important;
+        }
+        
+        .fc .fc-event-time,
+        .fc .fc-event-title {
+            font-size: 0.65rem !important;
+        }
+        
+        /* Ajustar scroll horizontal */
+        .fc .fc-scroller {
+            overflow-x: auto !important;
+        }
+        
+        /* Reducir altura de slots */
+        .fc .fc-timegrid-slot {
+            height: 1.5rem !important;
+        }
+        
+        /* Ajustar vista día/semana */
+        .fc .fc-timegrid-axis {
+            width: 35px !important;
+        }
+        
+        /* Mejorar legibilidad en vista lista */
+        .fc .fc-list-event {
+            font-size: 0.8rem !important;
+        }
+    }
+    
+    /* Estilos adicionales para pantallas muy pequeñas */
+    @media (max-width: 480px) {
+        .fc .fc-toolbar-title {
+            font-size: 1rem !important;
+        }
+        
+        .fc .fc-button {
+            padding: 0.25rem 0.4rem !important;
+            font-size: 0.7rem !important;
+        }
+        
+        .fc .fc-col-header-cell {
+            font-size: 0.6rem !important;
+        }
+        
+        .fc .fc-timegrid-axis {
+            width: 30px !important;
+        }
+    }
 </style>
 
 @endpush
