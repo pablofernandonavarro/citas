@@ -15,7 +15,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
         .hero-bg {
-            background: linear-gradient(rgba(37, 37, 37, 0.59), rgba(37, 37, 37, 0.59)), url('https://v.fastcdn.co/u/13a2027a/64481535-0-Diseo-sin-ttulo---20.png');
+            background: linear-gradient(rgba(37, 37, 37, 0.59), rgba(37, 37, 37, 0.59)), url('');
             background-size: cover;
             background-position: 57% 76%;
         }
@@ -93,7 +93,7 @@
     </section>
 
     <!-- Lesiones Frecuentes -->
-    <section class="py-20 bg-gray-900 text-white" style="background: linear-gradient(rgba(0, 0, 0, 0.59), rgba(0, 0, 0, 0.59)), url('https://v.fastcdn.co/u/13a2027a/64539513-0-WhatsApp-Image-2023-.jpeg'); background-size: cover;">
+    <section class="py-20 bg-gray-900 text-white" style="background: linear-gradient(rgba(0, 0, 0, 0.59), rgba(0, 0, 0, 0.59)), url(''); background-size: cover;">
         <div class="container mx-auto px-6">
             <h2 class="text-5xl md:text-7xl font-bold mb-8">LESIONES FRECUENTES</h2>
             <div class="grid md:grid-cols-2 gap-8">
