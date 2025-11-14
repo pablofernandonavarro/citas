@@ -27,7 +27,7 @@
 <body class="bg-white">
     <!-- Hero Section -->
     <section class="hero-bg relative min-h-screen flex items-center justify-center text-white">
-        <div class="absolute top-8 right-8 flex gap-3">
+        <div class="absolute top-4 sm:top-8 right-8 flex gap-3">
             <a href="{{ route('login') }}"
                 class="px-6 py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition xs:mb-4">
                 Iniciar Sesión
@@ -41,7 +41,7 @@
         <div class="container mx-auto px-6 text-center">
             <div class="mb-4">
                 <div
-                    class="w-16 h-16 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 mt-20 sm:mt-0 flex items-center justify-center">
+                    class="w-16 h-16 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 mt-24 sm:mt-0 flex items-center justify-center">
                     <img src="{{ asset('images/obrassociales/cetrip.png') }}" alt="Cetrip Logo"
                         class="w-full h-full object-contain">
                 </div>
