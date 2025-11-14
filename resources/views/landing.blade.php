@@ -25,7 +25,7 @@
     <!-- Hero Section -->
     <section class="hero-bg relative min-h-screen flex items-center justify-center text-white">
         <div class="absolute top-8 right-8 flex gap-3">
-            <a href="{{ route('login') }}" class="px-6 py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition xs:">
+            <a href="{{ route('login') }}" class="px-6 py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition">
                 Iniciar Sesión
             </a>
             <a href="{{ route('register') }}" class="px-6 py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition">
