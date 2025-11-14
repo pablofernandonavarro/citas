@@ -43,7 +43,7 @@
             <p class="text-xl mb-4 tracking-wide">CENTRO MEDICO ESPECIALIZADO </p>
             <div class="border-b border-white w-64 mx-auto mb-8"></div>
 
-            <h1 class="text-6xl md:text-8xl font-bold mb-12 leading-tight">
+            <h1 class="text-6lg md:text-8xl font-bold mb-12 leading-tight">
                 RECUPERA TU BIENESTAR.<br>
                 ESPECIALISTAS EN DOLOR LABORAL Y CALIDAD DE VIDA.
             </h1>
