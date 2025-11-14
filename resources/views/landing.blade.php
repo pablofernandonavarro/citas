@@ -26,53 +26,45 @@
 
 <body class="bg-white">
     <!-- Hero Section -->
-<section class="hero-bg relative min-h-screen flex items-center justify-center text-white px-4 sm:px-6">
-    <!-- Botones login/register -->
-    <div class="absolute top-6 right-4 flex flex-row gap-3 items-center">
-        <a href="{{ route('login') }}"
-            class="px-6 py-3 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition text-center">
-            Iniciar Sesión
-        </a>
-
-        <a href="{{ route('register') }}"
-            class="px-6 py-3 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition text-center">
-            Registrarse
-        </a>
-    </div>
-
-    <!-- Contenido central -->
-    <div class="container mx-auto px-4 sm:px-6 text-center">
-        <!-- Logo -->
-        <div class="w-16 h-16 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 flex items-center justify-center">
-            <img src="{{ asset('images/obrassociales/cetrip.png') }}" alt="Cetrip Logo"
-                class="w-full h-full object-contain">
-        </div>
-
-        <div class="border-b border-white w-48 sm:w-64 mx-auto mb-4"></div>
-
-        <p class="text-lg sm:text-xl mb-4 tracking-wide">CENTRO MEDICO ESPECIALIZADO</p>
-
-        <!-- Botón principal -->
-        <div class="flex flex-col md:flex-row gap-4 justify-center items-center mb-6">
+    <section class="hero-bg relative min-h-screen flex items-center justify-center text-white">
+        <div class="absolute top-8 right-8 flex gap-3">
+            <a href="{{ route('login') }}"
+                class="px-6 py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition xs:mb-4">
+                Iniciar Sesión
+            </a>
             <a href="{{ route('register') }}"
-                class="px-6 sm:px-8 py-3 bg-white text-gray-700 rounded-full hover:bg-blue-100 font-bold text-lg sm:text-xl transition shadow-lg w-full sm:w-auto text-center">
-                SOLICITAR TURNO
+                class="px-6 py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition">
+                Registrarse
             </a>
         </div>
 
-        <div class="border-b border-white w-48 sm:w-64 mx-auto mb-8"></div>
+        <div class="container mx-auto px-6 text-center">
+            <div class="mb-4">
+                <div class="w-32 h-32 mx-auto mb-8 flex items-center justify-center">
+                    <img src="{{ asset('images/obrassociales/cetrip.png') }}" alt="Cetrip Logo"
+                        class="w-full h-full object-contain">
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center mb-4">
+                <a href="{{ route('register') }}"
+                    class="px-8 py-3 bg-white text-gray-700 rounded-full hover:bg-blue-100 font-bold text-xl transition shadow-lg">
+                    SOLICITAR TURNO
+                </a>
+              
+            </div>
+            <div class="border-b border-white w-64 mx-auto mb-4"></div>
+            <p class="text-xl mb-4 tracking-wide">CENTRO MEDICO ESPECIALIZADO </p>
+            <div class="border-b border-white w-64 mx-auto mb-8"></div>
 
-        <!-- Título -->
-        <h1 class="text-3xl sm:text-6xl md:text-8xl font-bold mb-8 sm:mb-12 leading-snug sm:leading-tight">
-            RECUPERA TU BIENESTAR.<br>
-            ESPECIALISTAS EN DOLOR LABORAL Y CALIDAD DE VIDA.
-        </h1>
-    </div>
-</section>
+            <h1 class="text-6xl md:text-8xl font-bold mb-12 leading-tight">
+                RECUPERA TU BIENESTAR.<br>
+                ESPECIALISTAS EN DOLOR LABORAL Y CALIDAD DE VIDA.
+            </h1>
 
-
-
-
+            
+        </div>
+        </div>
+    </section>
 
     <!-- Coberturas -->
     <section class="py-20 bg-white">
