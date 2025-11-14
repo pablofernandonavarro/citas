@@ -40,7 +40,8 @@
 
         <div class="container mx-auto px-6 text-center">
             <div class="mb-4">
-                <div class="w-32 h-32 mx-auto mb-8 flex items-center justify-center">
+                <div
+                    class="w-16 h-16 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 mt-20 sm:mt-0 flex items-center justify-center">
                     <img src="{{ asset('images/obrassociales/cetrip.png') }}" alt="Cetrip Logo"
                         class="w-full h-full object-contain">
                 </div>
@@ -50,7 +51,7 @@
                     class="px-8 py-3 bg-white text-gray-700 rounded-full hover:bg-blue-100 font-bold text-xl transition shadow-lg">
                     SOLICITAR TURNO
                 </a>
-              
+
             </div>
             <div class="border-b border-white w-64 mx-auto mb-4"></div>
             <p class="text-xl mb-4 tracking-wide">CENTRO MEDICO ESPECIALIZADO </p>
@@ -61,7 +62,7 @@
                 ESPECIALISTAS EN DOLOR LABORAL Y CALIDAD DE VIDA.
             </h1>
 
-            
+
         </div>
         </div>
     </section>
