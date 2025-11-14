@@ -28,14 +28,14 @@
     <!-- Hero Section -->
 <section class="hero-bg relative min-h-screen flex items-center justify-center text-white px-4 sm:px-6">
     <!-- Botones login/register -->
-    <div class="absolute top-6 right-4 flex flex-col sm:flex-row gap-3 sm:gap-3 items-center sm:items-end">
+    <div class="absolute top-6 right-4 flex flex-row gap-3 items-center">
         <a href="{{ route('login') }}"
-            class="px-6 py-3 sm:py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition mb-3 sm:mb-0 text-center w-full sm:w-auto">
+            class="px-6 py-3 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition text-center">
             Iniciar Sesión
         </a>
 
         <a href="{{ route('register') }}"
-            class="px-6 py-3 sm:py-2 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition text-center w-full sm:w-auto">
+            class="px-6 py-3 bg-white text-gray-700 rounded-full hover:bg-gray-100 font-bold transition text-center">
             Registrarse
         </a>
     </div>
@@ -43,7 +43,7 @@
     <!-- Contenido central -->
     <div class="container mx-auto px-4 sm:px-6 text-center">
         <!-- Logo -->
-        <div class="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 flex items-center justify-center">
+        <div class="w-16 h-16 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 flex items-center justify-center">
             <img src="{{ asset('images/obrassociales/cetrip.png') }}" alt="Cetrip Logo"
                 class="w-full h-full object-contain">
         </div>
@@ -69,6 +69,8 @@
         </h1>
     </div>
 </section>
+
+
 
 
 
