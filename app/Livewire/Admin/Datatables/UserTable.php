@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin\DataTables;
+namespace App\Livewire\Admin\Datatables;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;

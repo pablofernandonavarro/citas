@@ -20,7 +20,7 @@ title="Turnos" :breadcrumbs="[
     </x-slot>
 
     <x-wireui-card>
-        @livewire('admin.dataTables.appointments-table')
+        @livewire('admin.datatables.appointments-table')
 
     </x-wireui-card>
 
