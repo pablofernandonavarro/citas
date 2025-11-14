@@ -114,10 +114,12 @@
                 {{ $appointment->doctor->user->name }}
             </div>
 
+            @if($appointment->doctor->speciality)
             <div class="detail-row">
                 <span class="detail-label">Especialidad:</span>
                 {{ $appointment->doctor->speciality->name }}
             </div>
+            @endif
 
             @if ($appointment->reason)
                 <div class="detail-row">
@@ -152,7 +154,7 @@
                     <table cellpadding="0" cellspacing="0" style="display: inline-block; margin: 10px;">
                         <tr>
                             <td align="center" bgcolor="#2196F3" style="border-radius: 5px;">
-                                <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode(config('app.name') . ' dirección') }}" 
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode('Jose C Paz 5723, V.Libertad - San Martin') }}" 
                                    target="_blank"
                                    style="display: inline-block; padding: 12px 30px; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 14px; font-family: Arial, sans-serif;">
                                     Cómo Llegar

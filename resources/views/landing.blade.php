@@ -44,7 +44,7 @@
             <div class="border-b border-white w-64 mx-auto mb-8"></div>
 
             <h1 class="text-6xl md:text-8xl font-bold mb-12 leading-tight">
-                RECUPERÁ TU BIENESTAR.<br>
+                RECUPERA TU BIENESTAR.<br>
                 ESPECIALISTAS EN DOLOR LABORAL Y CALIDAD DE VIDA.
             </h1>
 
