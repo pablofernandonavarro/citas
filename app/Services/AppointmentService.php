@@ -41,6 +41,7 @@ class AppointmentService
             ->with([
                 'user',
                 'speciality',
+                'cabinets', // Cargar gabinetes del doctor
                 'schedules' => function ($query) use ($date, $hourStart, $hourEnd) {
                     $query->where('day_of_week', $date->dayOfWeek);
                     $query->where('start_time', '>=', $hourStart);
@@ -86,8 +87,8 @@ class AppointmentService
     public function getAvailableSchedules($schedules, $appointments)
     {
         return $schedules->map(function ($schedule) use ($appointments) {
-            // Verificar si este horario está ocupado por alguna cita
-            $isBooked = $appointments->contains(function ($appointment) use ($schedule) {
+            // Contar cuántas citas ya existen en este horario
+            $appointmentCount = $appointments->filter(function ($appointment) use ($schedule) {
                 // Parsear solo los tiempos (sin fechas)
                 $scheduleTime = $schedule->start_time; // Ya es string 'HH:MM:SS'
                 $appointmentStart = $appointment->start_time; // Ya es string 'HH:MM:SS'
@@ -96,7 +97,17 @@ class AppointmentService
                 // Un horario está ocupado si el schedule.start_time está entre
                 // appointment.start_time y appointment.end_time (excluyendo el fin)
                 return $scheduleTime >= $appointmentStart && $scheduleTime < $appointmentEnd;
-            });
+            })->count();
+            
+            // Obtener cantidad de gabinetes del doctor
+            $cabinetCount = $schedule->doctor->cabinets()->count();
+            
+            // El horario está disponible si:
+            // - No hay citas (appointmentCount = 0), o
+            // - Hay gabinetes y el número de citas es menor que el número de gabinetes
+            $isBooked = $cabinetCount > 0 
+                ? $appointmentCount >= $cabinetCount 
+                : $appointmentCount > 0;
 
             return [
                 'start_time' => $schedule->start_time,

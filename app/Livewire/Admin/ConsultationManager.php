@@ -24,6 +24,8 @@ class ConsultationManager extends Component
 
     public function mount(Appointment $appointment)
     {
+        $appointment->load(['doctor.cabinets', 'cabinet']);
+        
         $this->consultation = $appointment->consultation ?? new Consultation();
         $this->form = [
             'diagnosis' => $this->consultation->diagnosis ?? '',

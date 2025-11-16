@@ -57,7 +57,7 @@ class AppointmentController extends Controller
     {
         Gate::authorize('update_appointment');
 
-
+        $appointment->load(['doctor.cabinets', 'cabinet']);
 
         return view('admin.appointments.edit', compact('appointment'));
     }
@@ -158,5 +158,59 @@ class AppointmentController extends Controller
     {
         Gate::authorize('update_appointment');
         return view('admin.appointments.consultation', compact('appointment'));
+    }
+
+    /**
+     * Asignar gabinete a una cita
+     */
+    public function assignCabinet(Request $request, Appointment $appointment)
+    {
+        Gate::authorize('update_appointment');
+
+        $request->validate([
+            'cabinet_id' => 'required|exists:cabinets,id'
+        ]);
+
+        // Verificar que el gabinete pertenezca al doctor
+        $doctor = $appointment->doctor;
+        if (!$doctor->cabinets()->where('cabinets.id', $request->cabinet_id)->exists()) {
+            session()->flash('swal',[
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'El gabinete seleccionado no está asignado a este doctor',
+            ]);
+            return back();
+        }
+
+        // Verificar que el gabinete no esté ocupado en el mismo horario
+        $cabinetOccupied = Appointment::where('cabinet_id', $request->cabinet_id)
+            ->where('id', '!=', $appointment->id) // Excluir la cita actual
+            ->whereDate('date', $appointment->date)
+            ->where(function ($query) use ($appointment) {
+                $query->where('start_time', '<', $appointment->end_time)
+                    ->where('end_time', '>', $appointment->start_time);
+            })
+            ->exists();
+
+        if ($cabinetOccupied) {
+            session()->flash('swal',[
+                'icon' => 'error',
+                'title' => 'Gabinete Ocupado',
+                'text' => 'Este gabinete ya está ocupado en este horario por otro paciente',
+            ]);
+            return back();
+        }
+
+        $appointment->update([
+            'cabinet_id' => $request->cabinet_id,
+        ]);
+
+        session()->flash('swal',[
+            'icon' => 'success',
+            'title' => '¡Éxito!',
+            'text' => 'Gabinete asignado exitosamente',
+        ]);
+
+        return back();
     }
 }

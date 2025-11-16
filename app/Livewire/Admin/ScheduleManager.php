@@ -38,7 +38,7 @@ class ScheduleManager extends Component
        $this->days = config('schedule.days');
        $this->start_time = config('schedule.start_time');
        $this->end_time = config('schedule.end_time');
-       $this->appointments_duration = config('schedule.appointments_duration');
+       $this->appointments_duration = $this->doctor->getAppointmentDuration();
        $this->intervals = 60 / $this->appointments_duration;
        $this->initializeSchedules();
    }

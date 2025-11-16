@@ -52,9 +52,10 @@ class PermissionSeeder extends Seeder
 
             'read_calendar',
 
-
-
-
+            'create_cabinet',
+            'read_cabinet',
+            'update_cabinet',
+            'delete_cabinet',
 
         ];
 

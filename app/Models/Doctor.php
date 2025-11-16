@@ -15,6 +15,7 @@ class Doctor extends Model
         'medical_license_number',
         'biography',
         'active',
+        'appointment_duration',
 
     ];
 
@@ -39,6 +40,22 @@ class Doctor extends Model
     public function unavailabilities()
     {
         return $this->hasMany(DoctorUnavailability::class);
+    }
+
+    // Relación muchos a muchos con gabinetes
+    public function cabinets()
+    {
+        return $this->belongsToMany(Cabinet::class, 'doctor_cabinet')
+            ->withTimestamps();
+    }
+
+    /**
+     * Obtener la duración de citas del doctor
+     * Si no tiene una personalizada, usa el valor por defecto del config
+     */
+    public function getAppointmentDuration()
+    {
+        return $this->appointment_duration ?? config('schedule.appointments_duration');
     }
 
 }

@@ -70,6 +70,58 @@
         </div>
     </x-wireui-card>
 
+    {{-- Sección de Gabinete (solo si el doctor tiene gabinetes asignados) --}}
+    @if($appointment->doctor->cabinets->count() > 0)
+        <x-wireui-card class="mb-4">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                        <i class="fas fa-door-open mr-2"></i>
+                        Gabinete
+                    </h3>
+                    @if($appointment->cabinet)
+                        <p class="text-sm text-gray-600">
+                            Gabinete asignado: 
+                            <span class="font-semibold text-green-600">{{ $appointment->cabinet->name }}</span>
+                        </p>
+                        @if($appointment->cabinet->description)
+                            <p class="text-xs text-gray-500 mt-1">{{ $appointment->cabinet->description }}</p>
+                        @endif
+                    @else
+                        <p class="text-sm text-yellow-600">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            Sin gabinete asignado
+                        </p>
+                    @endif
+                </div>
+                
+                @if($appointment->status->isEditable())
+                    <div class="ml-4">
+                        <form action="{{ route('admin.appointments.assign.cabinet', $appointment) }}" method="POST" class="flex gap-2">
+                            @csrf
+                            <select name="cabinet_id" required
+                                class="rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                <option value="" disabled {{ !$appointment->cabinet_id ? 'selected' : '' }}>
+                                    Seleccionar gabinete
+                                </option>
+                                @foreach($appointment->doctor->cabinets as $cabinet)
+                                    <option value="{{ $cabinet->id }}" 
+                                        {{ $appointment->cabinet_id == $cabinet->id ? 'selected' : '' }}>
+                                        {{ $cabinet->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <x-wireui-button primary type="submit" sm>
+                                <i class="fas fa-check mr-1"></i>
+                                Asignar
+                            </x-wireui-button>
+                        </form>
+                    </div>
+                @endif
+            </div>
+        </x-wireui-card>
+    @endif
+
     @if ($appointment->status->isEditable())
         @livewire('admin.appointment-manager', ['appointmentEdit' => $appointment])
     @elseif($appointment->status->isAvailable())

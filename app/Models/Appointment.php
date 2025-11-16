@@ -13,6 +13,7 @@ class Appointment extends Model
     protected $fillable = [
         'patient_id',
         'doctor_id',
+        'cabinet_id',
         'date',
         'start_time',
         'end_time',
@@ -43,5 +44,10 @@ class Appointment extends Model
     public function consultation()
     {
         return $this->hasOne(Consultation::class);
+    }
+
+    public function cabinet()
+    {
+        return $this->belongsTo(Cabinet::class);
     }
 }

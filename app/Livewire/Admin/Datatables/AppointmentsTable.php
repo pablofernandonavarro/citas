@@ -12,7 +12,7 @@ class AppointmentsTable extends DataTableComponent
     public function builder(): Builder
     {
        return  Appointment::query()
-            ->with('patient.user', 'doctor.user');
+            ->with('patient.user', 'doctor.user', 'cabinet');
 
     }
 
@@ -41,13 +41,35 @@ class AppointmentsTable extends DataTableComponent
                 ->sortable(),
             Column::make("Hora", "start_time")
                 ->sortable(),
-
-            Column::make("Hora de fin", "end_time")
-                ->sortable(),
+            Column::make("Gabinete", "cabinet_id")
+                ->format(function ($value, $row) {
+                    if ($row->cabinet) {
+                        return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">' . 
+                               '<i class="fas fa-door-open mr-1"></i> ' . 
+                               htmlspecialchars($row->cabinet->name) . 
+                               '</span>';
+                    }
+                    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">' . 
+                           'Sin asignar' . 
+                           '</span>';
+                })
+                ->html(),
             Column::make("Estado", "status")
                 ->format(function ($value, $row) {
-                    return $row->status->label();
+                    $statusColors = [
+                        1 => 'bg-blue-100 text-blue-800',    // Programado
+                        2 => 'bg-green-100 text-green-800',  // Completado
+                        3 => 'bg-red-100 text-red-800',      // Cancelado
+                        4 => 'bg-yellow-100 text-yellow-800', // Disponible
+                    ];
+                    
+                    $color = $statusColors[$row->status->value] ?? 'bg-gray-100 text-gray-800';
+                    
+                    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' . $color . '">' . 
+                           htmlspecialchars($row->status->label()) . 
+                           '</span>';
                 })
+                ->html()
                 ->searchable(function (Builder $query, $search) {
                     $statusMap = [
                         'programado' => 1,

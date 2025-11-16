@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Doctor;
+use App\Models\Cabinet;
 use Illuminate\Http\Request;
 use App\Models\Speciality;
 use Illuminate\Support\Facades\Gate;
@@ -31,8 +32,10 @@ class DoctorController extends Controller
     {   
         Gate::authorize('update_doctor');
         $specialities = Speciality::all();
+        $cabinets = Cabinet::where('is_active', true)->get();
+        $doctor->load('cabinets');
 
-        return view('admin.doctors.edit', compact('doctor', 'specialities'));
+        return view('admin.doctors.edit', compact('doctor', 'specialities', 'cabinets'));
     }
 
     /**
@@ -46,6 +49,7 @@ class DoctorController extends Controller
             'medical_license_number' => 'nullable|string|max:255|unique:doctors,medical_license_number,' . $doctor->id,
             'biography' => 'nullable|string',
             'active' =>  ['required', 'in:1,0'],
+            'appointment_duration' => 'nullable|integer|in:15,30,45,60,90',
         ]);
         
         $doctor->update($data);

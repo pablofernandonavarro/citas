@@ -96,9 +96,14 @@ class AppointmentManager extends Component
             ->values();
         if ($schedules->count()) {
             $this->appointment['doctor_id'] = $selectedSchedules['doctor_id'];
+            
+            // Obtener la duración del doctor seleccionado
+            $doctor = \App\Models\Doctor::find($selectedSchedules['doctor_id']);
+            $appointmentDuration = $doctor ? $doctor->getAppointmentDuration() : config('schedule.appointments_duration');
+            
             $this->appointment['start_time'] = $schedules->first();
-            $this->appointment['end_time'] = Carbon::parse($schedules->last())->addMinutes(config('schedule.appointments_duration'))->format('H:i:s');
-            $this->appointment['duration'] = $schedules->count() * config('schedule.appointments_duration');
+            $this->appointment['end_time'] = Carbon::parse($schedules->last())->addMinutes($appointmentDuration)->format('H:i:s');
+            $this->appointment['duration'] = $schedules->count() * $appointmentDuration;
             return;
         }
         $this->appointment['doctor_id'] = '';
@@ -160,19 +165,34 @@ class AppointmentManager extends Component
         // Dos citas se solapan si:
         // - La nueva cita empieza antes de que termine la existente Y
         // - La nueva cita termina después de que empiece la existente
-        $existingAppointment = Appointment::where('doctor_id', $this->appointment['doctor_id'])
+        
+        // Contar cuántas citas ya existen en este horario
+        $existingAppointmentsCount = Appointment::where('doctor_id', $this->appointment['doctor_id'])
             ->whereDate('date', $this->appointment['date'])
             ->where(function ($query) {
                 $query->where('start_time', '<', $this->appointment['end_time'])
                     ->where('end_time', '>', $this->appointment['start_time']);
             })
-            ->exists();
-
-        if ($existingAppointment) {
+            ->count();
+        
+        // Obtener la cantidad de gabinetes del doctor
+        $doctor = \App\Models\Doctor::with('cabinets')->find($this->appointment['doctor_id']);
+        $cabinetCount = $doctor->cabinets()->count();
+        
+        // Validar según si tiene gabinetes o no
+        $isTimeSlotFull = $cabinetCount > 0 
+            ? $existingAppointmentsCount >= $cabinetCount 
+            : $existingAppointmentsCount > 0;
+        
+        if ($isTimeSlotFull) {
+            $message = $cabinetCount > 0 
+                ? "No hay gabinetes disponibles. El doctor tiene {$cabinetCount} gabinete(s) y ya hay {$existingAppointmentsCount} cita(s) en este horario."
+                : 'Ya existe una cita en este horario para el doctor seleccionado.';
+                
             $this->dispatch('swal', [
                 'icon' => 'error',
                 'title' => 'Horario no disponible',
-                'text' => 'Ya existe una cita en este horario para el doctor seleccionado.',
+                'text' => $message,
             ]);
             return;
         }
