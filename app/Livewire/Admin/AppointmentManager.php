@@ -204,13 +204,13 @@ class AppointmentManager extends Component
         // Cargar relaciones necesarias para los emails
         $newAppointment->load(['patient.user', 'doctor.user', 'doctor.speciality']);
 
-        // Enviar email al paciente (en cola)
+        // Enviar email al paciente
         Mail::to($newAppointment->patient->user->email)
-            ->queue(new AppointmentCreatedPatient($newAppointment));
+            ->send(new AppointmentCreatedPatient($newAppointment));
 
-        // Enviar email al doctor (en cola)
+        // Enviar email al doctor
         Mail::to($newAppointment->doctor->user->email)
-            ->queue(new AppointmentCreatedDoctor($newAppointment));
+            ->send(new AppointmentCreatedDoctor($newAppointment));
 
         session()->flash('swal', [
             'icon' => 'success',
