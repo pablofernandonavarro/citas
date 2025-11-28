@@ -2,7 +2,7 @@
   return  [
         [
             'type' => 'link',
-            'title' => 'Dashboard',
+            'title' => 'Inicio',
             'icon' => 'fa-solid fa-gauge',
             'route' => 'admin.dashboard',
             'active' => 'admin.dashboard',

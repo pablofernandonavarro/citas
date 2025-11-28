@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        'enabled' => env('WHATSAPP_ENABLED', false),
+        'api_url' => env('WHATSAPP_API_URL', 'https://graph.facebook.com/v21.0'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'token' => env('WHATSAPP_TOKEN'),
+        // Nombre y lenguaje del template para mensajes iniciados por el negocio
+        // Crea en Meta un template cuyo cuerpo tenga un solo placeholder {{1}}
+        // y aquí enviaremos todo el texto del turno en ese parámetro.
+        'template_name' => env('WHATSAPP_TEMPLATE_NAME'),
+        'template_language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'es_AR'),
+    ],
+
 ];

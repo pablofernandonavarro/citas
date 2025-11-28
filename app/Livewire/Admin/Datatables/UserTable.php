@@ -31,6 +31,7 @@ class UserTable extends DataTableComponent
             Column::make('Correo Electrónico', 'email')
                 ->sortable(),
             Column::make('Teléfono', 'phone')
+                ->format(fn($value) => format_phone_compact($value))
                 ->sortable(),
             Column::make('DNI', 'dni')
                 ->searchable()

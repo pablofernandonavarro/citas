@@ -38,6 +38,15 @@ class AppointmentController extends Controller
     {
         Gate::authorize('create_appointment');
         $appointment = Appointment::create($request->all());
+        
+        // Cargar relaciones para WhatsApp
+        $appointment->load(['patient.user', 'doctor.user']);
+        
+        // Enviar WhatsApp al paciente
+        \Log::info('DEBUG Controller: Intentando enviar WhatsApp', ['appointment_id' => $appointment->id]);
+        app(\App\Services\WhatsAppService::class)->sendAppointmentConfirmationToPatient($appointment);
+        \Log::info('DEBUG Controller: WhatsApp enviado');
+        
         return redirect()->route('appointments.index');
     }
 

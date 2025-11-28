@@ -40,13 +40,21 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|regex:/^[\d\s\+\-\(\)]+$/',
             'password' => 'required|string|min:8|confirmed',
             'dni' => 'required|string|max:20|unique:users',
             'address' => 'required|string|max:255',
             'role_id' => 'required|exists:roles,id',
 
+        ], [
+            'phone.regex' => 'El teléfono solo puede contener números, espacios y los caracteres: + - ( )',
         ]);
+        
+        // Normalizar el teléfono antes de guardar
+        if (!empty($data['phone'])) {
+            $data['phone'] = normalize_phone($data['phone']);
+        }
+        
         $user = User::create($data);
 
         $user->roles()->attach($data['role_id']);
@@ -100,16 +108,20 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|regex:/^[\d\s\+\-\(\)]+$/',
             'password' => 'nullable|string|min:8|confirmed',
             'dni' => 'required|string|max:20|unique:users,dni,'.$user->id,
             'address' => 'required|string|max:255',
             'role_id' => 'required|exists:roles,id',
+        ], [
+            'phone.regex' => 'El teléfono solo puede contener números, espacios y los caracteres: + - ( )',
         ]);
 
         $user->name = $data['name'];
         $user->email = $data['email'];
-        $user->phone = $data['phone'];
+        
+        // Normalizar el teléfono antes de guardar
+        $user->phone = !empty($data['phone']) ? normalize_phone($data['phone']) : null;
         if (! empty($data['password'])) {
             $user->password = bcrypt($data['password']);
         }

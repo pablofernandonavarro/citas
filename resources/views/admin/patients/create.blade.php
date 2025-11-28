@@ -119,8 +119,9 @@
                         <x-wireui-input 
                             label="Teléfono" 
                             name="emergency_contact_phone" 
-                            placeholder="Teléfono del contacto"
+                            placeholder="Ej: +54 9 11 1234-5678 o 1112345678"
                         />
+                        <p class="text-xs text-gray-500 mt-1">Formato: código de país + código de área + número</p>
                     </div>
 
                     <div>

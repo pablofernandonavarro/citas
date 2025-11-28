@@ -79,7 +79,7 @@
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <span class="text-gray-500 font-semibold">Telefono:</span>
-                            <span class="text-gray-900 text-sm ml-1">{{ $patient->user->phone }}</span>
+                            <span class="text-gray-900 text-sm ml-1">{{ format_phone($patient->user->phone) }}</span>
                         </div>
                         <div>
                             <span class="text-gray-500 font-semibold">Email:</span>
@@ -155,7 +155,9 @@
                         </div>
                         <div>
                             <x-wireui-input label="Telefono del contacto de emergencia" name="emergency_contact_phone"
-                                value="{{ old('emergency_contact_phone', $patient->emergency_contact_phone) }}" />
+                                placeholder="Ej: +54 9 11 1234-5678 o 1112345678"
+                                value="{{ old('emergency_contact_phone', format_phone($patient->emergency_contact_phone)) }}" />
+                            <p class="text-xs text-gray-500 mt-1">Formato: código de país + código de área + número</p>
                         </div>
                         <div>
                             <x-wireui-input label="Relacion con el contacto de emergencia"

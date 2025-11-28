@@ -49,10 +49,17 @@ class PatientController extends Controller
             'genetic_conditions' => 'nullable|string',
             'other_conditions' => 'nullable|string',
             'emergency_contact_name' => 'nullable|string|max:255',
-            'emergency_contact_phone' => 'nullable|string|max:20',
+            'emergency_contact_phone' => 'nullable|string|max:20|regex:/^[\d\s\+\-\(\)]+$/',
             'emergency_contact_relationship' => 'nullable|string|max:255',
             'date_of_birth' => 'nullable|date',
+        ], [
+            'emergency_contact_phone.regex' => 'El teléfono solo puede contener números, espacios y los caracteres: + - ( )',
         ]);
+
+        // Normalizar el teléfono de emergencia antes de guardar
+        if (!empty($validated['emergency_contact_phone'])) {
+            $validated['emergency_contact_phone'] = normalize_phone($validated['emergency_contact_phone']);
+        }
 
         Patient::create($validated);
 
@@ -101,11 +108,18 @@ class PatientController extends Controller
           'social_work_id' => 'nullable|exists:social_works,id',
           'other_conditions' => 'nullable|string|max:255',
           'emergency_contact_name' => 'nullable|string|max:255',
-          'emergency_contact_phone' => 'nullable|string|max:20',
+          'emergency_contact_phone' => 'nullable|string|max:20|regex:/^[\d\s\+\-\(\)]+$/',
           'emergency_contact_relationship' => 'nullable|string|max:255',
           'medical_record_number' => 'nullable|string|unique:patients,medical_record_number,' . $patient->id,
 
+        ], [
+            'emergency_contact_phone.regex' => 'El teléfono solo puede contener números, espacios y los caracteres: + - ( )',
         ]);
+
+        // Normalizar el teléfono de emergencia antes de guardar
+        if (!empty($validated['emergency_contact_phone'])) {
+            $validated['emergency_contact_phone'] = normalize_phone($validated['emergency_contact_phone']);
+        }
 
         $patient->update($validated);
 

@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App;
 use App\Mail\AppointmentCreatedDoctor;
+use App\Services\WhatsAppService;
 use App\Mail\AppointmentCreatedPatient;
 use App\Models\Speciality;
 use App\Services\AppointmentService;
@@ -202,7 +203,7 @@ class AppointmentManager extends Component
         $newAppointment->consultation()->create([]);
 
         // Cargar relaciones necesarias para los emails
-        $newAppointment->load(['patient.user', 'doctor.user', 'doctor.speciality']);
+        $newAppointment->load(['patient.user', 'doctor.user', 'doctor.speciality', 'cabinet']);
 
         // Enviar email al paciente
         Mail::to($newAppointment->patient->user->email)
@@ -211,6 +212,11 @@ class AppointmentManager extends Component
         // Enviar email al doctor
         Mail::to($newAppointment->doctor->user->email)
             ->send(new AppointmentCreatedDoctor($newAppointment));
+
+        // Enviar WhatsApp al paciente (si el servicio está configurado)
+        \Log::info('DEBUG: Intentando enviar WhatsApp', ['appointment_id' => $newAppointment->id]);
+        app(WhatsAppService::class)->sendAppointmentConfirmationToPatient($newAppointment);
+        \Log::info('DEBUG: WhatsApp enviado');
 
         session()->flash('swal', [
             'icon' => 'success',

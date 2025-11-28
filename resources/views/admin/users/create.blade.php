@@ -29,8 +29,11 @@
 
             <div class="grid lg:grid-cols-2 gap-4">
 
-                <x-wireui-input label="Teléfono" name="phone" placeholder="Ingrese el número de teléfono"
-                    class="w-full mb-4" value="{{ old('phone') }}" required />
+                <div class="w-full mb-4">
+                    <x-wireui-input label="Teléfono" name="phone" placeholder="Ej: +54 9 11 1234-5678 o 1112345678"
+                        class="w-full" value="{{ old('phone') }}" required />
+                    <p class="text-xs text-gray-500 mt-1">Formato: código de país + código de área + número (10 dígitos sin el 15)</p>
+                </div>
 
 
 

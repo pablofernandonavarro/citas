@@ -32,6 +32,7 @@ class DoctorTable extends DataTableComponent
             Column::make("DNI", "user.dni")
                 ->sortable(),
             Column::make("Teléfono", "user.phone")
+                ->format(fn($value) => format_phone_compact($value))
                 ->sortable(),
             Column::make("Especialidad", "speciality.name")
             ->searchable()
