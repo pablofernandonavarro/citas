@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
-    protected string $apiUrl;
-    protected string $accessToken;
-    protected string $phoneNumberId;
+    protected ?string $apiUrl;
+    protected ?string $accessToken;
+    protected ?string $phoneNumberId;
 
     public function __construct()
     {
@@ -68,7 +68,7 @@ class WhatsAppService
     /**
      * Enviar mensaje usando una plantilla (template)
      */
-    public function sendTemplate(string $to, string $templateName, array $parameters = []): bool
+    public function sendTemplate(string $to, string $templateName, array $parameters = [], string $language = 'es_AR'): bool
     {
         try {
             $components = [];
@@ -90,7 +90,7 @@ class WhatsAppService
                     'template' => [
                         'name' => $templateName,
                         'language' => [
-                            'code' => 'es',
+                            'code' => $language,
                         ],
                         'components' => $components,
                     ],

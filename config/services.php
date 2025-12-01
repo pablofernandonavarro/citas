@@ -39,6 +39,11 @@ return [
         'api_url' => env('WHATSAPP_API_URL', 'https://graph.facebook.com/v21.0'),
         'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'templates' => [
+            'appointment_created' => env('WHATSAPP_TEMPLATE_APPOINTMENT_CREATED', 'confirmacion_de_turno'),
+            'language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'es_AR'),
+        ],
+        'default_location' => env('CLINIC_DEFAULT_LOCATION', 'Jose C Paz 5723, San Martín, Buenos Aires, Argentina'),
     ],
 
 ];

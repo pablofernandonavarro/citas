@@ -6,6 +6,7 @@ use App;
 use App\Mail\AppointmentCreatedDoctor;
 use App\Mail\AppointmentCreatedPatient;
 use App\Models\Speciality;
+use App\Notifications\AppointmentCreatedNotification;
 use App\Services\AppointmentService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -204,18 +205,23 @@ class AppointmentManager extends Component
         // Cargar relaciones necesarias para los emails
         $newAppointment->load(['patient.user', 'doctor.user', 'doctor.speciality']);
 
-        // Enviar email al paciente
+        // Enviar email al paciente (en cola)
         Mail::to($newAppointment->patient->user->email)
-            ->send(new AppointmentCreatedPatient($newAppointment));
+            ->queue(new AppointmentCreatedPatient($newAppointment));
 
-        // Enviar email al doctor
+        // Enviar email al doctor (en cola)
         Mail::to($newAppointment->doctor->user->email)
-            ->send(new AppointmentCreatedDoctor($newAppointment));
+            ->queue(new AppointmentCreatedDoctor($newAppointment));
+
+        // Enviar WhatsApp al paciente (en cola)
+        if ($newAppointment->patient->user->phone) {
+            $newAppointment->patient->user->notify(new AppointmentCreatedNotification($newAppointment));
+        }
 
         session()->flash('swal', [
             'icon' => 'success',
             'title' => 'Cita creada con exito',
-            'text' => 'La cita se ha creado correctamente y se han enviado las notificaciones por email',
+            'text' => 'La cita se ha creado correctamente y se han enviado las notificaciones por email y WhatsApp',
         ]);
         return redirect()->route('admin.appointments.index');
 

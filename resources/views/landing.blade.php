@@ -214,8 +214,14 @@
                 <p class="text-gray-600 text-lg mt-6">Hacé click y envianos un Whatsapp para ponerte en contacto con nosotros.</p>
             </div>
             <div class="text-center mb-8">
-                <p class="text-xl font-bold text-gray-800">Jose C Paz 5723, San Martín</p>
-                <p class="text-xl text-gray-600">Buenos Aires, Argentina</p>
+                @php
+                    $location = config('services.whatsapp.default_location', "Jose C Paz 5723, San Martín\nBuenos Aires, Argentina");
+                    $locationParts = explode("\n", $location);
+                @endphp
+                <p class="text-xl font-bold text-gray-800">{{ $locationParts[0] ?? 'Jose C Paz 5723, San Martín' }}</p>
+                @if(isset($locationParts[1]))
+                    <p class="text-xl text-gray-600">{{ $locationParts[1] }}</p>
+                @endif
             </div>
             <div class="max-w-2xl mx-auto">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3283.4359767892695!2d-58.54001492422988!3d-34.619282257296365!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb7b0e5e5e5e5%3A0x5e5e5e5e5e5e5e5e!2sJose%20C%20Paz%205723%2C%20San%20Mart%C3%ADn%2C%20Provincia%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1699999999999!5m2!1ses-419!2sar" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="rounded-lg shadow-lg"></iframe>
