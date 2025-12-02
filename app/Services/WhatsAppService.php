@@ -165,6 +165,51 @@ class WhatsAppService
     }
 
     /**
+     * Enviar confirmación de turno al paciente
+     */
+    public function sendAppointmentConfirmationToPatient($appointment): bool
+    {
+        if (!$this->isConfigured()) {
+            Log::info('WhatsApp: servicio no configurado');
+            return false;
+        }
+
+        $patient = $appointment->patient;
+        if (!$patient || !$patient->user || !$patient->user->phone) {
+            Log::info('WhatsApp: paciente sin teléfono', [
+                'appointment_id' => $appointment->id,
+            ]);
+            return false;
+        }
+
+        $phone = $patient->user->phone;
+        $templateName = config('services.whatsapp.templates.appointment_created', 'confirmacion_de_turno');
+        $language = config('services.whatsapp.templates.language', 'es');
+
+        // Formatear fecha y hora
+        $date = \Carbon\Carbon::parse($appointment->date)->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY');
+        $time = \Carbon\Carbon::parse($appointment->start_time)->format('H:i');
+        
+        // Parámetros del template
+        $parameters = [
+            $patient->user->name,                              // 1. Nombre del paciente
+            $date,                                             // 2. Fecha
+            $time,                                             // 3. Hora
+            $appointment->doctor->user->name ?? 'Tu médico',  // 4. Nombre del doctor
+            $appointment->doctor->speciality->name ?? 'Kinesiología', // 5. Especialidad
+            config('services.whatsapp.default_location', 'Jose C Paz 5723, San Martín'), // 6. Ubicación
+        ];
+
+        Log::info('WhatsApp: enviando confirmación de turno', [
+            'appointment_id' => $appointment->id,
+            'phone' => $phone,
+            'template' => $templateName,
+        ]);
+
+        return $this->sendTemplate($phone, $templateName, $parameters, $language);
+    }
+
+    /**
      * Verificar si el servicio está configurado correctamente
      */
     public function isConfigured(): bool
