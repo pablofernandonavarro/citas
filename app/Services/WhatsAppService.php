@@ -2,310 +2,220 @@
 
 namespace App\Services;
 
-use App\Models\Appointment;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
-    /**
-     * Envía al paciente la confirmación del turno por WhatsApp.
-     */
-    public function sendAppointmentConfirmationToPatient(Appointment $appointment): void
+    protected ?string $apiUrl;
+    protected ?string $accessToken;
+    protected ?string $phoneNumberId;
+
+    public function __construct()
     {
-        Log::info('WhatsApp: iniciando envío de confirmación', [
-            'appointment_id' => $appointment->id,
-            'enabled' => Config::get('services.whatsapp.enabled', false),
-        ]);
-        
-        if (! Config::get('services.whatsapp.enabled', false)) {
-            Log::info('WhatsApp: servicio deshabilitado');
-            return;
-        }
-
-        $patientUser = $appointment->patient?->user;
-
-        if (! $patientUser || ! $patientUser->phone) {
-            Log::info('WhatsApp: paciente sin teléfono, se omite envío', [
-                'appointment_id' => $appointment->id,
-            ]);
-
-            return;
-        }
-
-        $to = $this->normalizePhone($patientUser->phone);
-
-        if ($to === null) {
-            Log::warning('WhatsApp: teléfono inválido para paciente', [
-                'appointment_id' => $appointment->id,
-                'raw_phone' => $patientUser->phone,
-            ]);
-
-            return;
-        }
-
-        $config = Config::get('services.whatsapp', []);
-
-        if (! empty($config['template_name'])) {
-            $this->sendTemplateMessage($to, $appointment, $config);
-        } else {
-            $message = $this->buildAppointmentMessage($appointment);
-            $this->sendTextMessage($to, $message, $config);
-        }
+        $this->apiUrl = config('services.whatsapp.api_url');
+        $this->accessToken = config('services.whatsapp.access_token');
+        $this->phoneNumberId = config('services.whatsapp.phone_number_id');
     }
 
     /**
-     * Normaliza un teléfono al formato 54XXXXXXXXXX.
-     * Maneja diferentes formatos de entrada:
-     * - 54XXXXXXXXXX (ya normalizado)
-     * - +54XXXXXXXXXX (con +)
-     * - 0XXXXXXXXXX (código de área con 0)
-     * - XXXXXXXXXX (sin código de país)
+     * Enviar mensaje de texto a un número de WhatsApp
      */
-    protected function normalizePhone(string $rawPhone): ?string
+    public function sendMessage(string $to, string $message): bool
     {
-        // Eliminar todos los caracteres no numéricos
-        $digits = preg_replace('/\D+/', '', $rawPhone);
-
-        if (! $digits) {
-            Log::warning('WhatsApp: teléfono vacío después de limpiar', [
-                'raw_phone' => $rawPhone,
-            ]);
-            return null;
-        }
-
-        // Si ya tiene el código de país 54
-        if (str_starts_with($digits, '54')) {
-            // Verificar longitud válida (54 + código de área + número = 12-13 dígitos)
-            if (strlen($digits) >= 12 && strlen($digits) <= 13) {
-                return $digits;
-            }
-            Log::warning('WhatsApp: longitud inválida para número con código 54', [
-                'raw_phone' => $rawPhone,
-                'digits' => $digits,
-                'length' => strlen($digits),
-            ]);
-            return null;
-        }
-
-        // Si empieza con 0, quitarlo (código de área nacional)
-        if (str_starts_with($digits, '0')) {
-            $digits = substr($digits, 1);
-        }
-
-        // Verificar longitud del número local (debe ser 10 dígitos: código área + número)
-        if (strlen($digits) !== 10) {
-            Log::warning('WhatsApp: longitud inválida para número argentino', [
-                'raw_phone' => $rawPhone,
-                'digits' => $digits,
-                'length' => strlen($digits),
-            ]);
-            return null;
-        }
-
-        // Remover el 15 si está presente después del código de área
-        // Formato: 011-15-XXXX-XXXX o 0XX-15-XXX-XXXX
-        if (strlen($digits) == 10 && substr($digits, 2, 2) === '15') {
-            $digits = substr($digits, 0, 2) . substr($digits, 4);
-        }
-
-        // Agregar código de país
-        return '54'.$digits;
-    }
-
-    /**
-     * Construye el cuerpo del mensaje con los datos del turno.
-     */
-    protected function buildAppointmentMessage(Appointment $appointment): string
-    {
-        $patientName = $appointment->patient?->user?->name ?? 'Paciente';
-        $doctorName = $appointment->doctor?->user?->name ?? 'Tu médico';
-        $speciality = $appointment->doctor?->speciality?->name;
-        $cabinetName = $appointment->cabinet?->name;
-        $cabinetDesc = $appointment->cabinet?->description;
-        $date = $appointment->date?->format('l d \\d\\e F Y');
-
-        $startTime = substr($appointment->start_time, 0, 5);
-        $endTime = substr($appointment->end_time, 0, 5);
-
-        $clinicName = Config::get('app.name', 'Tu centro médico');
-        $clinicAddress = env('CLINIC_ADDRESS', 'Dirección del consultorio');
-        $clinicMapsUrl = env('CLINIC_MAPS_URL');
-
-        $lines = [
-            '🏥 *'.$clinicName.'*',
-            '',
-            'Hola *'.$patientName.'* 👋',
-            'Te confirmamos tu turno:',
-            '',
-            '📅 *Fecha*: '.$date,
-            '🕒 *Horario*: '.$startTime.' - '.$endTime,
-            '👨‍⚕️ *Profesional*: '.$doctorName,
-        ];
-
-        if ($speciality) {
-            $lines[] = '🩺 *Especialidad*: '.$speciality;
-        }
-
-        if ($cabinetName) {
-            $lines[] = '🚪 *Gabinete*: '.$cabinetName;
-        }
-
-        if ($cabinetDesc) {
-            $lines[] = 'ℹ️ '.$cabinetDesc;
-        }
-
-        $lines[] = '';
-        $lines[] = '📍 *Ubicación*: '.$clinicAddress;
-
-        if ($clinicMapsUrl) {
-            $lines[] = '🗺️ Cómo llegar: '.$clinicMapsUrl;
-        }
-
-        $lines[] = '';
-        $lines[] = 'Si no podés asistir, por favor avisá con anticipación para reprogramar.';
-
-        return implode("\n", $lines);
-    }
-
-    /**
-     * Mensaje de texto simple (solo si ya hay ventana activa).
-     */
-    protected function sendTextMessage(string $to, string $body, array $config = []): void
-    {
-        $token = $config['token'] ?? env('WHATSAPP_TOKEN');
-        $phoneNumberId = $config['phone_number_id'] ?? env('WHATSAPP_PHONE_NUMBER_ID');
-        $baseUrl = rtrim($config['api_url'] ?? env('WHATSAPP_API_URL', 'https://graph.facebook.com/v21.0'), '/');
-
-        if (! $token || ! $phoneNumberId) {
-            Log::warning('WhatsApp: servicio no configurado correctamente (token o phone_number_id faltante)');
-
-            return;
-        }
-
         try {
-            $response = Http::withToken($token)
-                ->acceptJson()
-                ->post($baseUrl.'/'.$phoneNumberId.'/messages', [
+            $formattedPhone = $this->formatPhoneNumber($to);
+            
+            Log::info('WhatsApp sending message', [
+                'original' => $to,
+                'formatted' => $formattedPhone,
+            ]);
+            
+            $response = Http::withToken($this->accessToken)
+                ->post("{$this->apiUrl}/{$this->phoneNumberId}/messages", [
                     'messaging_product' => 'whatsapp',
-                    'to' => $to,
+                    'to' => $formattedPhone,
                     'type' => 'text',
                     'text' => [
-                        'preview_url' => false,
-                        'body' => $body,
+                        'body' => $message,
                     ],
                 ]);
 
-            if ($response->failed()) {
-                Log::error('WhatsApp: error al enviar mensaje de texto', [
-                    'to' => $to,
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                ]);
-            } else {
-                Log::info('WhatsApp: mensaje de texto enviado correctamente', [
+            if ($response->successful()) {
+                Log::info('WhatsApp message sent successfully', [
                     'to' => $to,
                     'response' => $response->json(),
                 ]);
+                return true;
             }
-        } catch (\Throwable $e) {
-            Log::error('WhatsApp: excepción al enviar mensaje de texto', [
+
+            Log::error('WhatsApp message failed', [
+                'to' => $to,
+                'status' => $response->status(),
+                'response' => $response->json(),
+            ]);
+
+            return false;
+        } catch (\Exception $e) {
+            Log::error('WhatsApp service error', [
                 'to' => $to,
                 'error' => $e->getMessage(),
             ]);
+            return false;
         }
     }
 
     /**
-     * Mensaje con template aprobado (business initiated, siempre se entrega).
+     * Enviar mensaje usando una plantilla (template)
      */
-    protected function sendTemplateMessage(string $to, Appointment $appointment, array $config = []): void
+    public function sendTemplate(string $to, string $templateName, array $parameters = [], string $language = 'es_AR'): bool
     {
-        $token = $config['token'] ?? env('WHATSAPP_TOKEN');
-        $phoneNumberId = $config['phone_number_id'] ?? env('WHATSAPP_PHONE_NUMBER_ID');
-        $baseUrl = rtrim($config['api_url'] ?? env('WHATSAPP_API_URL', 'https://graph.facebook.com/v21.0'), '/');
-        $templateName = $config['template_name'] ?? env('WHATSAPP_TEMPLATE_NAME', 'hello_world');
-        $templateLanguage = $config['template_language'] ?? env('WHATSAPP_TEMPLATE_LANGUAGE', 'en_US');
-
-        if (! $token || ! $phoneNumberId || ! $templateName) {
-            Log::warning('WhatsApp: template no configurado correctamente');
-
-            return;
-        }
-
         try {
-            Log::info('WhatsApp: enviando mensaje con template', [
-                'to' => $to,
-                'template' => $templateName,
-            ]);
-
-            // Construir el payload del template
-            $templatePayload = [
-                'messaging_product' => 'whatsapp',
-                'to' => $to,
-                'type' => 'template',
-                'template' => [
-                    'name' => $templateName,
-                    'language' => [
-                        'code' => $templateLanguage,
-                    ],
-                ],
-            ];
-
-            // Solo agregar parámetros si el template NO es hello_world
-            // hello_world es un template estándar sin parámetros
-            // Para templates personalizados en producción, descomentar y ajustar los parámetros
-            if ($templateName !== 'hello_world') {
-                $patientName = $appointment->patient?->user?->name ?? 'Paciente';
-                $doctorName = $appointment->doctor?->user?->name ?? 'Tu médico';
-                $date = $appointment->date?->format('d/m/Y');
-                $startTime = substr($appointment->start_time, 0, 5);
-                $dateTime = "{$date} a las {$startTime}";
-
-                // Ajustar estos parámetros según tu template personalizado en Meta
-                $templatePayload['template']['components'] = [
-                    [
-                        'type' => 'body',
-                        'parameters' => [
-                            [
-                                'type' => 'text',
-                                'text' => $patientName,
-                            ],
-                            [
-                                'type' => 'text',
-                                'text' => $dateTime,
-                            ],
-                            [
-                                'type' => 'text',
-                                'text' => $doctorName,
-                            ],
-                        ],
-                    ],
+            $components = [];
+            
+            if (!empty($parameters)) {
+                $components[] = [
+                    'type' => 'body',
+                    'parameters' => collect($parameters)->map(function ($param) {
+                        return ['type' => 'text', 'text' => $param];
+                    })->values()->toArray(),
                 ];
             }
 
-            $response = Http::withToken($token)
-                ->acceptJson()
-                ->post($baseUrl.'/'.$phoneNumberId.'/messages', $templatePayload);
-
-            if ($response->failed()) {
-                Log::error('WhatsApp: error al enviar mensaje con template', [
-                    'to' => $to,
-                    'status' => $response->status(),
-                    'body' => $response->body(),
+            $response = Http::withToken($this->accessToken)
+                ->post("{$this->apiUrl}/{$this->phoneNumberId}/messages", [
+                    'messaging_product' => 'whatsapp',
+                    'to' => $this->formatPhoneNumber($to),
+                    'type' => 'template',
+                    'template' => [
+                        'name' => $templateName,
+                        'language' => [
+                            'code' => $language,
+                        ],
+                        'components' => $components,
+                    ],
                 ]);
-            } else {
-                Log::info('WhatsApp: mensaje con template enviado correctamente', [
+
+            if ($response->successful()) {
+                Log::info('WhatsApp template sent successfully', [
                     'to' => $to,
+                    'template' => $templateName,
                     'response' => $response->json(),
                 ]);
+                return true;
             }
-        } catch (\Throwable $e) {
-            Log::error('WhatsApp: excepción al enviar mensaje con template', [
+
+            Log::error('WhatsApp template failed', [
+                'to' => $to,
+                'template' => $templateName,
+                'status' => $response->status(),
+                'response' => $response->json(),
+            ]);
+
+            return false;
+        } catch (\Exception $e) {
+            Log::error('WhatsApp service error', [
                 'to' => $to,
                 'error' => $e->getMessage(),
             ]);
+            return false;
         }
+    }
+
+    /**
+     * Formatear número de teléfono al formato internacional
+     * Asume números argentinos si no tienen código de país
+     */
+    protected function formatPhoneNumber(string $phone): string
+    {
+        // Remover espacios, guiones y paréntesis
+        $phone = preg_replace('/[\s\-\(\)]/', '', $phone);
+        
+        // Si ya tiene +, solo quitarlo
+        if (str_starts_with($phone, '+')) {
+            return substr($phone, 1);
+        }
+        
+        // Si ya empieza con 54, está completo
+        if (str_starts_with($phone, '54')) {
+            return $phone;
+        }
+        
+        // Si empieza con 0, quitarlo
+        if (str_starts_with($phone, '0')) {
+            $phone = substr($phone, 1);
+        }
+        
+        // Si empieza con 15 (celular argentino), formato en BD: 1569975132
+        // Debe quedar como: 54111569975132 (sin el 9 entre 54 y 11)
+        if (str_starts_with($phone, '15')) {
+            // Agregar 5411 y mantener el resto (15 + número)
+            $phone = '5411' . $phone;
+        } 
+        // Si ya tiene código de área (ej: 1156997132)
+        elseif (str_starts_with($phone, '11') && strlen($phone) >= 10) {
+            $phone = '54' . $phone;
+        }
+        // Otros casos: agregar 54
+        else {
+            $phone = '54' . $phone;
+        }
+        
+        return $phone;
+    }
+
+    /**
+     * Enviar confirmación de turno al paciente
+     */
+    public function sendAppointmentConfirmationToPatient($appointment): bool
+    {
+        if (!$this->isConfigured()) {
+            Log::info('WhatsApp: servicio no configurado');
+            return false;
+        }
+
+        $patient = $appointment->patient;
+        if (!$patient || !$patient->user || !$patient->user->phone) {
+            Log::info('WhatsApp: paciente sin teléfono', [
+                'appointment_id' => $appointment->id,
+            ]);
+            return false;
+        }
+
+        $phone = $patient->user->phone;
+        $templateName = config('services.whatsapp.templates.appointment_created', 'confirmacion_de_turno');
+        $language = config('services.whatsapp.templates.language', 'es');
+
+        // Formatear fecha y hora
+        $date = \Carbon\Carbon::parse($appointment->date)->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY');
+        $time = \Carbon\Carbon::parse($appointment->start_time)->format('H:i');
+        
+        // Parámetros del template
+        $parameters = [
+            $patient->user->name,                              // 1. Nombre del paciente
+            $date,                                             // 2. Fecha
+            $time,                                             // 3. Hora
+            $appointment->doctor->user->name ?? 'Tu médico',  // 4. Nombre del doctor
+            $appointment->doctor->speciality->name ?? 'Kinesiología', // 5. Especialidad
+            config('services.whatsapp.default_location', 'Jose C Paz 5723, San Martín'), // 6. Ubicación
+        ];
+
+        Log::info('WhatsApp: enviando confirmación de turno', [
+            'appointment_id' => $appointment->id,
+            'phone' => $phone,
+            'template' => $templateName,
+        ]);
+
+        return $this->sendTemplate($phone, $templateName, $parameters, $language);
+    }
+
+    /**
+     * Verificar si el servicio está configurado correctamente
+     */
+    public function isConfigured(): bool
+    {
+        return !empty($this->accessToken) 
+            && !empty($this->phoneNumberId) 
+            && !empty($this->apiUrl);
     }
 }

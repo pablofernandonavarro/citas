@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\View\Composers\SiderbarComposer;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\Channels\WhatsAppChannel;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,5 +24,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('layouts.admin',SiderbarComposer::class);
+        
+        // Registrar canal personalizado de WhatsApp
+        Notification::extend('whatsapp', function ($app) {
+            return $app->make(WhatsAppChannel::class);
+        });
     }
 }
