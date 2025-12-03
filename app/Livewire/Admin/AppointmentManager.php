@@ -149,31 +149,26 @@ class AppointmentManager extends Component
             'appointment.duration' => 'required|integer|min:15',
             'appointment.reason' => 'nullable|string|max:500',
         ]);
-        if ($this->appointmentEdit) {
-            $this->appointmentEdit->update($this->appointment);
-            $this->dispatch('swal', [
-                'icon' => 'success',
-                'title' => 'Cita actualizada con exito',
-                'text' => 'La cita se ha actualizado correctamente',
-            ]);
-            $this->searchAvailability(new AppointmentService);
 
-            return;
-
-        }
         // Verificar que no exista otra cita en el mismo horario
         // Dos citas se solapan si:
         // - La nueva cita empieza antes de que termine la existente Y
         // - La nueva cita termina después de que empiece la existente
 
         // Contar cuántas citas ya existen en este horario
-        $existingAppointmentsCount = Appointment::where('doctor_id', $this->appointment['doctor_id'])
-            ->whereDate('date', $this->appointment['date'])
+        $query = Appointment::where('doctor_id', $this->appointment['doctor_id'])
+            ->whereRaw('DATE(date) = ?', [$this->appointment['date']])
             ->where(function ($query) {
                 $query->where('start_time', '<', $this->appointment['end_time'])
                     ->where('end_time', '>', $this->appointment['start_time']);
-            })
-            ->count();
+            });
+
+        // Excluir la cita actual si estamos editando
+        if ($this->appointmentEdit) {
+            $query->where('id', '!=', $this->appointmentEdit->id);
+        }
+
+        $existingAppointmentsCount = $query->count();
 
         // Obtener la cantidad de gabinetes del doctor
         $doctor = \App\Models\Doctor::with('cabinets')->find($this->appointment['doctor_id']);
@@ -194,6 +189,18 @@ class AppointmentManager extends Component
                 'title' => 'Horario no disponible',
                 'text' => $message,
             ]);
+
+            return;
+        }
+
+        if ($this->appointmentEdit) {
+            $this->appointmentEdit->update($this->appointment);
+            $this->dispatch('swal', [
+                'icon' => 'success',
+                'title' => 'Cita actualizada con exito',
+                'text' => 'La cita se ha actualizado correctamente',
+            ]);
+            $this->searchAvailability(new AppointmentService);
 
             return;
         }
