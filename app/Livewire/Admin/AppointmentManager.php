@@ -2,26 +2,23 @@
 
 namespace App\Livewire\Admin;
 
-use App;
 use App\Mail\AppointmentCreatedDoctor;
-use App\Services\WhatsAppService;
 use App\Mail\AppointmentCreatedPatient;
+use App\Models\Appointment;
 use App\Models\Speciality;
-use App\Notifications\AppointmentCreatedNotification;
 use App\Services\AppointmentService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use App\Models\Appointment;
-
 
 class AppointmentManager extends Component
 {
-
     public ?Appointment $appointmentEdit = null;
+
     public $search = [
         'date' => null,
         'hour' => null,
@@ -59,10 +56,9 @@ class AppointmentManager extends Component
             $this->appointment['patient_id'] = $this->appointmentEdit->patient_id;
         }
 
-      if(auth()->user()->hasRole('Paciente')){
-        $this->appointment['patient_id'] = auth()->user()->patient->id;
-      }
-
+        if (auth()->user()->hasRole('Paciente')) {
+            $this->appointment['patient_id'] = auth()->user()->patient->id;
+        }
 
     }
 
@@ -98,21 +94,21 @@ class AppointmentManager extends Component
             ->values();
         if ($schedules->count()) {
             $this->appointment['doctor_id'] = $selectedSchedules['doctor_id'];
-            
+
             // Obtener la duración del doctor seleccionado
             $doctor = \App\Models\Doctor::find($selectedSchedules['doctor_id']);
             $appointmentDuration = $doctor ? $doctor->getAppointmentDuration() : config('schedule.appointments_duration');
-            
+
             $this->appointment['start_time'] = $schedules->first();
             $this->appointment['end_time'] = Carbon::parse($schedules->last())->addMinutes($appointmentDuration)->format('H:i:s');
             $this->appointment['duration'] = $schedules->count() * $appointmentDuration;
+
             return;
         }
         $this->appointment['doctor_id'] = '';
         $this->appointment['start_time'] = '';
         $this->appointment['end_time'] = '';
         $this->appointment['duration'] = 0;
-
 
     }
 
@@ -131,7 +127,7 @@ class AppointmentManager extends Component
                 'date_format:H:i:s',
                 Rule::when(
                     $this->search['date'] === now()->format('Y-m-d'),
-                    ['after_or_equal:' . now()->format('H:i:s')]
+                    ['after_or_equal:'.now()->format('H:i:s')]
                 ),
             ],
             'search.speciality_id' => 'nullable|exists:specialities,id',
@@ -141,6 +137,7 @@ class AppointmentManager extends Component
         $this->availabilities = $Service->searchAvailability(...$this->search);
 
     }
+
     public function save()
     {
         $this->validate([
@@ -159,7 +156,8 @@ class AppointmentManager extends Component
                 'title' => 'Cita actualizada con exito',
                 'text' => 'La cita se ha actualizado correctamente',
             ]);
-            $this->searchAvailability(new AppointmentService());
+            $this->searchAvailability(new AppointmentService);
+
             return;
 
         }
@@ -167,7 +165,7 @@ class AppointmentManager extends Component
         // Dos citas se solapan si:
         // - La nueva cita empieza antes de que termine la existente Y
         // - La nueva cita termina después de que empiece la existente
-        
+
         // Contar cuántas citas ya existen en este horario
         $existingAppointmentsCount = Appointment::where('doctor_id', $this->appointment['doctor_id'])
             ->whereDate('date', $this->appointment['date'])
@@ -176,43 +174,58 @@ class AppointmentManager extends Component
                     ->where('end_time', '>', $this->appointment['start_time']);
             })
             ->count();
-        
+
         // Obtener la cantidad de gabinetes del doctor
         $doctor = \App\Models\Doctor::with('cabinets')->find($this->appointment['doctor_id']);
         $cabinetCount = $doctor->cabinets()->count();
-        
+
         // Validar según si tiene gabinetes o no
-        $isTimeSlotFull = $cabinetCount > 0 
-            ? $existingAppointmentsCount >= $cabinetCount 
+        $isTimeSlotFull = $cabinetCount > 0
+            ? $existingAppointmentsCount >= $cabinetCount
             : $existingAppointmentsCount > 0;
-        
+
         if ($isTimeSlotFull) {
-            $message = $cabinetCount > 0 
+            $message = $cabinetCount > 0
                 ? "No hay gabinetes disponibles. El doctor tiene {$cabinetCount} gabinete(s) y ya hay {$existingAppointmentsCount} cita(s) en este horario."
                 : 'Ya existe una cita en este horario para el doctor seleccionado.';
-                
+
             $this->dispatch('swal', [
                 'icon' => 'error',
                 'title' => 'Horario no disponible',
                 'text' => $message,
             ]);
+
             return;
         }
 
-        //guardar la cita
+        // guardar la cita
         $newAppointment = Appointment::create($this->appointment);
         $newAppointment->consultation()->create([]);
 
         // Cargar relaciones necesarias para los emails
         $newAppointment->load(['patient.user', 'doctor.user', 'doctor.speciality', 'cabinet']);
 
-        // Enviar email al paciente (en cola)
-        Mail::to($newAppointment->patient->user->email)
-            ->queue(new AppointmentCreatedPatient($newAppointment));
+        // Enviar email al paciente (inmediato)
+        try {
+            Mail::to($newAppointment->patient->user->email)
+                ->send(new AppointmentCreatedPatient($newAppointment));
+        } catch (\Exception $e) {
+            Log::error('Error enviando email al paciente', [
+                'appointment_id' => $newAppointment->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
-        // Enviar email al doctor (en cola)
-        Mail::to($newAppointment->doctor->user->email)
-            ->queue(new AppointmentCreatedDoctor($newAppointment));
+        // Enviar email al doctor (inmediato)
+        try {
+            Mail::to($newAppointment->doctor->user->email)
+                ->send(new AppointmentCreatedDoctor($newAppointment));
+        } catch (\Exception $e) {
+            Log::error('Error enviando email al doctor', [
+                'appointment_id' => $newAppointment->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // Enviar WhatsApp al paciente
         if ($newAppointment->patient->user->phone) {
@@ -224,9 +237,8 @@ class AppointmentManager extends Component
             'title' => 'Cita creada con exito',
             'text' => 'La cita se ha creado correctamente y se han enviado las notificaciones por email y WhatsApp',
         ]);
+
         return redirect()->route('admin.appointments.index');
-
-
 
     }
 }
