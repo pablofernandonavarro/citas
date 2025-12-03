@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-Laravel 12 application for managing appointments ("citas" means appointments in Spanish). Uses Jetstream with Livewire stack, Laravel Sanctum for API authentication, WireUI and Flowbite for UI components.
+Laravel 12 application for managing medical appointments ("citas" means appointments in Spanish). Features include appointment scheduling, doctor schedule management, WhatsApp notifications via Meta Business API, and automated reminders. Uses Jetstream with Livewire stack, Laravel Sanctum for API authentication, WireUI and Flowbite for UI components.
 
 ## Development Commands
 
@@ -38,6 +38,42 @@ php artisan test tests/Feature/ExampleTest.php
 
 # Run specific test method
 php artisan test --filter test_method_name
+```
+
+### WhatsApp
+```powershell
+# Enviar recordatorios 24 horas antes manualmente
+php artisan appointments:send-day-before-reminders
+
+# Enviar recordatorios 2 horas antes manualmente
+php artisan appointments:send-two-hours-before-reminders
+
+# Diagnosticar configuración de WhatsApp
+php artisan whatsapp:diagnose
+
+# Probar envío de WhatsApp
+php artisan whatsapp:test
+```
+
+### Queue Worker
+```powershell
+# Iniciar queue worker (necesario para WhatsApp)
+php artisan queue:work
+
+# Con reintentos
+php artisan queue:listen --tries=1
+
+# Ver trabajos fallidos
+php artisan queue:failed
+```
+
+### Scheduler (Tareas Programadas)
+```powershell
+# Para desarrollo - ejecutar scheduler manualmente
+php artisan schedule:work
+
+# Ver tareas programadas
+php artisan schedule:list
 ```
 
 ### Code Quality
@@ -92,8 +128,11 @@ php artisan storage:link
 - **Frontend**: Livewire 3 + Blade templates
 - **UI Libraries**: Jetstream (Livewire stack), WireUI, Flowbite, Tailwind CSS 3
 - **Authentication**: Laravel Fortify + Sanctum
+- **Authorization**: Spatie Laravel Permission (roles y permisos)
 - **Build Tool**: Vite 7
 - **Database**: SQLite (default), configurable via .env
+- **Queue**: Database driver
+- **External APIs**: WhatsApp Business API (Meta Graph API v21.0)
 
 ### Route Organization
 Routes are organized into separate files with middleware applied at bootstrap level:
@@ -158,3 +197,45 @@ Admin routes are registered in `bootstrap/app.php` with middleware applied autom
 - Test suites: Unit (`tests/Unit`), Feature (`tests/Feature`)
 - Uses in-memory SQLite for testing
 - Run via `composer test` or `php artisan test`
+
+### WhatsApp Integration
+**Service**: `app/Services/WhatsAppService.php` maneja toda la interacción con la API de WhatsApp Business.
+
+**Configuración requerida** (`.env`):
+- `WHATSAPP_API_URL`: URL de la API de Meta (https://graph.facebook.com/v21.0)
+- `WHATSAPP_ACCESS_TOKEN`: Token de acceso de Meta for Developers
+- `WHATSAPP_PHONE_NUMBER_ID`: ID del número de teléfono de WhatsApp Business
+
+**Funcionalidad**:
+- Envío automático de confirmación al crear turnos (template: `confirmacion_de_turno`)
+- Recordatorios automáticos 24 horas antes (diario a las 9:00 AM, timezone Argentina)
+- Recordatorios automáticos 2 horas antes (cada 15 minutos)
+- Formateo automático de números argentinos (+54)
+- Los mensajes se envían mediante queue jobs
+
+**Comandos programados** (definidos en `bootstrap/app.php`):
+- `appointments:send-day-before-reminders`: Ejecuta diariamente a las 9:00 AM
+- `appointments:send-two-hours-before-reminders`: Ejecuta cada 15 minutos
+
+**Template de WhatsApp**: Ver `WHATSAPP_TEMPLATE.md` para configuración en Meta Business Manager.
+
+### Schedule Configuration
+La configuración de horarios de citas se maneja en `config/schedule.php`:
+- `days`: Array de días habilitados (1=lunes, 5=viernes, etc.)
+- `appointments_duration`: Duración de cada intervalo en minutos (ej: 60)
+- `start_time`: Hora de inicio del horario laboral (ej: '08:00:00')
+- `end_time`: Hora de fin del horario laboral (ej: '18:00:00')
+
+Después de cambiar esta configuración, ejecutar `php artisan config:clear`.
+
+### Key Services
+- `app/Services/WhatsAppService.php`: Integración con WhatsApp Business API
+- `app/Services/AppointmentService.php`: Lógica de negocio de citas
+
+### Livewire Components (Admin)
+- `AppointmentManager`: Gestión de citas médicas
+- `ScheduleManager`: Gestión de horarios de doctores
+- `ConsultationManager`: Gestión de consultas
+
+### Helper Global
+El archivo `app/Helpers/helpers.php` está cargado automáticamente (ver composer.json).

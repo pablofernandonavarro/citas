@@ -30,41 +30,37 @@ class DiagnoseWhatsApp extends Command
         $this->info('=== Diagnóstico de Configuración de WhatsApp ===');
         $this->newLine();
 
-        // 1. Verificar si está habilitado
-        $enabled = Config::get('services.whatsapp.enabled', false);
-        $this->checkConfig('Servicio habilitado', $enabled, 'WHATSAPP_ENABLED');
-
-        // 2. Verificar API URL
+        // 1. Verificar API URL
         $apiUrl = Config::get('services.whatsapp.api_url');
         $this->checkConfig('API URL', $apiUrl, 'WHATSAPP_API_URL');
+
+        // 2. Verificar Access Token
+        $token = Config::get('services.whatsapp.access_token');
+        $this->checkConfig('Access Token', $token, 'WHATSAPP_ACCESS_TOKEN', true);
 
         // 3. Verificar Phone Number ID
         $phoneNumberId = Config::get('services.whatsapp.phone_number_id');
         $this->checkConfig('Phone Number ID', $phoneNumberId, 'WHATSAPP_PHONE_NUMBER_ID');
 
-        // 4. Verificar Token
-        $token = Config::get('services.whatsapp.token');
-        $this->checkConfig('Token', $token, 'WHATSAPP_TOKEN', true);
+        // 4. Verificar Templates
+        $templateName = Config::get('services.whatsapp.templates.appointment_created');
+        $this->checkConfig('Template (appointment_created)', $templateName, 'WHATSAPP_TEMPLATE_APPOINTMENT_CREATED', false, true);
 
-        // 5. Verificar Template (opcional)
-        $templateName = Config::get('services.whatsapp.template_name');
-        $this->checkConfig('Template Name (opcional)', $templateName, 'WHATSAPP_TEMPLATE_NAME', false, true);
-
-        $templateLanguage = Config::get('services.whatsapp.template_language');
+        $templateLanguage = Config::get('services.whatsapp.templates.language');
         $this->info("Template Language: " . ($templateLanguage ?: 'es_AR (default)'));
+        
+        // 5. Verificar ubicación
+        $location = Config::get('services.whatsapp.default_location');
+        $this->info("Ubicación por defecto: " . ($location ?: 'Jose C Paz 5723, San Martín, Buenos Aires, Argentina'));
 
         $this->newLine();
         
         // Resumen
-        if (!$enabled) {
-            $this->warn('⚠️  El servicio de WhatsApp está DESHABILITADO');
-            $this->info('Para habilitarlo, agrega a tu archivo .env:');
-            $this->line('WHATSAPP_ENABLED=true');
-        } elseif (!$phoneNumberId || !$token) {
+        if (!$phoneNumberId || !$token) {
             $this->error('❌ Configuración incompleta. Faltan credenciales obligatorias.');
             $this->info('Agrega estas variables a tu archivo .env:');
             if (!$phoneNumberId) $this->line('WHATSAPP_PHONE_NUMBER_ID=tu_phone_number_id');
-            if (!$token) $this->line('WHATSAPP_TOKEN=tu_token_de_facebook');
+            if (!$token) $this->line('WHATSAPP_ACCESS_TOKEN=tu_token_de_acceso_de_meta');
         } else {
             $this->info('✅ Configuración completa');
             
