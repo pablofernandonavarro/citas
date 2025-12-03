@@ -214,9 +214,9 @@ class AppointmentManager extends Component
         Mail::to($newAppointment->doctor->user->email)
             ->queue(new AppointmentCreatedDoctor($newAppointment));
 
-        // Enviar WhatsApp al paciente (en cola)
+        // Enviar WhatsApp al paciente
         if ($newAppointment->patient->user->phone) {
-            $newAppointment->patient->user->notify(new AppointmentCreatedNotification($newAppointment));
+            app(\App\Services\WhatsAppService::class)->sendAppointmentConfirmationToPatient($newAppointment);
         }
 
         session()->flash('swal', [
