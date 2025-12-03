@@ -227,9 +227,23 @@ class AppointmentManager extends Component
             ]);
         }
 
-        // Enviar WhatsApp al paciente
+        // Enviar WhatsApp al paciente (inmediato)
         if ($newAppointment->patient->user->phone) {
-            app(\App\Services\WhatsAppService::class)->sendAppointmentConfirmationToPatient($newAppointment);
+            try {
+                $whatsappSent = app(\App\Services\WhatsAppService::class)->sendAppointmentConfirmationToPatient($newAppointment);
+                if (! $whatsappSent) {
+                    Log::warning('WhatsApp no se pudo enviar al paciente', [
+                        'appointment_id' => $newAppointment->id,
+                        'phone' => $newAppointment->patient->user->phone,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Error enviando WhatsApp al paciente', [
+                    'appointment_id' => $newAppointment->id,
+                    'phone' => $newAppointment->patient->user->phone,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         session()->flash('swal', [
