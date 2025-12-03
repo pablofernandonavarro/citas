@@ -219,11 +219,6 @@ class AppointmentManager extends Component
             $newAppointment->patient->user->notify(new AppointmentCreatedNotification($newAppointment));
         }
 
-        // Enviar WhatsApp al paciente (si el servicio está configurado)
-        \Log::info('DEBUG: Intentando enviar WhatsApp', ['appointment_id' => $newAppointment->id]);
-        app(WhatsAppService::class)->sendAppointmentConfirmationToPatient($newAppointment);
-        \Log::info('DEBUG: WhatsApp enviado');
-
         session()->flash('swal', [
             'icon' => 'success',
             'title' => 'Cita creada con exito',
