@@ -98,22 +98,19 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Liberar un turno cancelado para que esté disponible
+     * Liberar un turno cancelado eliminándolo del sistema
      */
     public function release(Appointment $appointment)
     {
         Gate::authorize('update_appointment');
         
-        $appointment->update([
-            'status' => AppointmentEnum::AVAILABLE,
-            'patient_id' => null,
-            'reason' => null,
-        ]);
+        // Eliminar el turno completamente en lugar de dejarlo como AVAILABLE
+        $appointment->delete();
 
         session()->flash('swal',[
             'icon' => 'success',
             'title' => '¡Éxito!',
-            'text' => 'El turno fue liberado y está disponible para otros pacientes',
+            'text' => 'El turno fue eliminado del sistema',
         ]);
 
         return redirect()->route('admin.appointments.available');

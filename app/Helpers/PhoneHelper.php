@@ -156,9 +156,33 @@ class PhoneHelper
             $digits = substr($digits, 1);
         }
 
+        // Remover el 9 después del 54 (formato internacional con 9)
+        // Ejemplo: 5491169975132 -> 1169975132
+        if (str_starts_with($digits, '9') && strlen($digits) == 11) {
+            $digits = substr($digits, 1);
+        }
+
         // Remover el 15 después del código de área si está presente
-        if (strlen($digits) == 12 && substr($digits, 2, 2) === '15') {
-            $digits = substr($digits, 0, 2) . substr($digits, 4);
+        // Ejemplo: 11156997132 -> 1169975132
+        if (strlen($digits) >= 10) {
+            // Si tiene 11 o más dígitos y el 15 está después del código de área
+            if (strlen($digits) == 12 && substr($digits, 2, 2) === '15') {
+                $digits = substr($digits, 0, 2) . substr($digits, 4);
+            }
+            // Si es formato 0111569975132 (13 dígitos con 0, código área, 15 y número)
+            elseif (strlen($digits) == 11 && substr($digits, 2, 2) === '15') {
+                $digits = substr($digits, 0, 2) . substr($digits, 4);
+            }
+        }
+
+        // Validar que tenga 10 dígitos (formato argentino estándar)
+        if (strlen($digits) != 10) {
+            // Log para debugging
+            \Log::warning('PhoneHelper: Teléfono con longitud incorrecta', [
+                'original' => $phone,
+                'normalized' => $digits,
+                'length' => strlen($digits),
+            ]);
         }
 
         return $digits ?: null;

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Appointment;
+use App\Enums\AppointmentEnum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -38,7 +39,12 @@ Route::get('/patient', function (Request $request) {
 Route::middleware(['web', 'auth'])->get('/appointments', function (Request $request) {
     $query = Appointment::withoutGlobalScope(\App\Models\Scopes\VerifyRole::class)
         ->with(['patient.user', 'doctor.user'])
-        ->whereBetween('date', [$request->start, $request->end]);
+        ->whereBetween('date', [$request->start, $request->end])
+        ->whereNotNull('patient_id')
+        ->whereNotNull('doctor_id')
+        ->whereHas('patient.user')
+        ->whereHas('doctor.user')
+        ->where('status', '!=', AppointmentEnum::AVAILABLE->value);
     
     // Filtrar según el rol del usuario autenticado
     if (auth()->check()) {

@@ -21,10 +21,10 @@ enum AppointmentEnum: int
     public function color(): string
     {
         return match($this) {
-            self::SCHEDULED => 'blue',
-            self::COMPLETED => 'green',
-            self::CANCELED => 'red',
-            self::AVAILABLE => 'yellow',
+            self::SCHEDULED => '#3b82f6',  // Azul
+            self::COMPLETED => '#10b981',  // Verde
+            self::CANCELED => '#ef4444',   // Rojo
+            self::AVAILABLE => '#fbbf24',  // Amarillo
         };
     }
     public function isEditable(): bool

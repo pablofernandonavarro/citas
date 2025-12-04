@@ -50,9 +50,14 @@
             <div class="grid lg:grid-cols-2 gap-4">
 
                 <div class="w-full mb-4">
-                    <x-wireui-input label="Teléfono" name="phone" placeholder="Ej: +54 9 11 1234-5678 o 1112345678"
+                    <x-wireui-input label="Teléfono" name="phone" placeholder="Ej: 1169975132"
                         class="w-full" value="{{ old('phone', $user->phone) }}" required />
-                    <p class="text-xs text-gray-500 mt-1">Formato: código de país + código de área + número (10 dígitos sin el 15)</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <strong>ℹ️ Formato correcto:</strong> 10 dígitos (código de área + número)<br>
+                        <strong>✓</strong> Buenos Aires: <code>1169975132</code><br>
+                        <strong>✓</strong> Córdoba: <code>3514567890</code><br>
+                        <strong>✗</strong> No usar: 0, 15, +54, espacios ni guiones
+                    </p>
                 </div>
 
 

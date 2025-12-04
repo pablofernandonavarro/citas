@@ -22,3 +22,10 @@ if (! function_exists('format_phone')) {
         return \App\Helpers\PhoneHelper::format($phone);
     }
 }
+
+if (! function_exists('normalize_phone')) {
+    function normalize_phone(?string $phone): ?string
+    {
+        return \App\Helpers\PhoneHelper::normalize($phone);
+    }
+}

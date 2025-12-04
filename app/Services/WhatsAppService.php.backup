@@ -2,16 +2,13 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
     protected ?string $apiUrl;
-
     protected ?string $accessToken;
-
     protected ?string $phoneNumberId;
 
     public function __construct()
@@ -28,12 +25,12 @@ class WhatsAppService
     {
         try {
             $formattedPhone = $this->formatPhoneNumber($to);
-
+            
             Log::info('WhatsApp sending message', [
                 'original' => $to,
                 'formatted' => $formattedPhone,
             ]);
-
+            
             $response = Http::withToken($this->accessToken)
                 ->post("{$this->apiUrl}/{$this->phoneNumberId}/messages", [
                     'messaging_product' => 'whatsapp',
@@ -49,7 +46,6 @@ class WhatsAppService
                     'to' => $to,
                     'response' => $response->json(),
                 ]);
-
                 return true;
             }
 
@@ -65,7 +61,6 @@ class WhatsAppService
                 'to' => $to,
                 'error' => $e->getMessage(),
             ]);
-
             return false;
         }
     }
@@ -77,8 +72,8 @@ class WhatsAppService
     {
         try {
             $components = [];
-
-            if (! empty($parameters)) {
+            
+            if (!empty($parameters)) {
                 $components[] = [
                     'type' => 'body',
                     'parameters' => collect($parameters)->map(function ($param) {
@@ -107,7 +102,6 @@ class WhatsAppService
                     'template' => $templateName,
                     'response' => $response->json(),
                 ]);
-
                 return true;
             }
 
@@ -124,7 +118,6 @@ class WhatsAppService
                 'to' => $to,
                 'error' => $e->getMessage(),
             ]);
-
             return false;
         }
     }
@@ -137,37 +130,37 @@ class WhatsAppService
     {
         // Remover espacios, guiones y paréntesis
         $phone = preg_replace('/[\s\-\(\)]/', '', $phone);
-
+        
         // Si ya tiene +, solo quitarlo
         if (str_starts_with($phone, '+')) {
             return substr($phone, 1);
         }
-
+        
         // Si ya empieza con 54, está completo
         if (str_starts_with($phone, '54')) {
             return $phone;
         }
-
+        
         // Si empieza con 0, quitarlo
         if (str_starts_with($phone, '0')) {
             $phone = substr($phone, 1);
         }
-
+        
         // Si empieza con 15 (celular argentino), formato en BD: 1569975132
         // Debe quedar como: 54111569975132 (sin el 9 entre 54 y 11)
         if (str_starts_with($phone, '15')) {
             // Agregar 5411 y mantener el resto (15 + número)
-            $phone = '5411'.$phone;
-        }
+            $phone = '5411' . $phone;
+        } 
         // Si ya tiene código de área (ej: 1156997132)
         elseif (str_starts_with($phone, '11') && strlen($phone) >= 10) {
-            $phone = '54'.$phone;
+            $phone = '54' . $phone;
         }
         // Otros casos: agregar 54
         else {
-            $phone = '54'.$phone;
+            $phone = '54' . $phone;
         }
-
+        
         return $phone;
     }
 
@@ -176,29 +169,17 @@ class WhatsAppService
      */
     public function sendAppointmentConfirmationToPatient($appointment): bool
     {
-        if (! $this->isConfigured()) {
+        if (!$this->isConfigured()) {
             Log::info('WhatsApp: servicio no configurado');
-
             return false;
         }
 
         $patient = $appointment->patient;
-        if (! $patient || ! $patient->user || ! $patient->user->phone) {
+        if (!$patient || !$patient->user || !$patient->user->phone) {
             Log::info('WhatsApp: paciente sin teléfono', [
                 'appointment_id' => $appointment->id,
             ]);
-
             return false;
-        }
-
-        // Prevenir envíos duplicados usando caché (solo bloquea por 5 minutos)
-        $cacheKey = "whatsapp_sent_appointment_{$appointment->id}";
-        if (Cache::has($cacheKey)) {
-            Log::info('WhatsApp: mensaje ya enviado recientemente para esta cita (evitando duplicado)', [
-                'appointment_id' => $appointment->id,
-            ]);
-
-            return true;
         }
 
         $phone = $patient->user->phone;
@@ -208,7 +189,7 @@ class WhatsAppService
         // Formatear fecha y hora
         $date = \Carbon\Carbon::parse($appointment->date)->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY');
         $time = \Carbon\Carbon::parse($appointment->start_time)->format('H:i');
-
+        
         // Parámetros del template
         $parameters = [
             $patient->user->name,                              // 1. Nombre del paciente
@@ -225,20 +206,7 @@ class WhatsAppService
             'template' => $templateName,
         ]);
 
-        // Marcar inmediatamente para prevenir duplicados concurrentes
-        Cache::put($cacheKey, true, now()->addMinutes(5));
-
-        $result = $this->sendTemplate($phone, $templateName, $parameters, $language);
-
-        // Si falla, eliminar el caché para permitir reintentos
-        if (! $result) {
-            Cache::forget($cacheKey);
-            Log::warning('WhatsApp: falló el envío, removiendo bloqueo de caché para permitir reintentos', [
-                'appointment_id' => $appointment->id,
-            ]);
-        }
-
-        return $result;
+        return $this->sendTemplate($phone, $templateName, $parameters, $language);
     }
 
     /**
@@ -246,8 +214,8 @@ class WhatsAppService
      */
     public function isConfigured(): bool
     {
-        return ! empty($this->accessToken)
-            && ! empty($this->phoneNumberId)
-            && ! empty($this->apiUrl);
+        return !empty($this->accessToken) 
+            && !empty($this->phoneNumberId) 
+            && !empty($this->apiUrl);
     }
 }
