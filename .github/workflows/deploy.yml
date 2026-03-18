@@ -24,8 +24,16 @@ jobs:
       - name: Copiar .env
         run: cp .env.example .env
 
-      - name: Instalar dependencias
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias PHP
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Instalar dependencias JS y compilar assets
+        run: npm ci && npm run build
 
       - name: Generar clave
         run: php artisan key:generate
