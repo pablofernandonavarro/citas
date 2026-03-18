@@ -68,8 +68,8 @@ jobs:
             fi
             cd $PROJECT
             git remote set-url origin https://github.com/pablofernandonavarro/citas.git
-            git pull origin main
-            ls -la
+            git fetch origin
+            git reset --hard origin/main
             composer install --no-dev --no-interaction --optimize-autoloader
             php artisan migrate --force
             php artisan config:cache
