@@ -62,10 +62,11 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            if [ ! -d "${{ secrets.SSH_PATH }}/.git" ]; then
-              git clone https://github.com/pablofernandonavarro/citas.git ${{ secrets.SSH_PATH }}
+            PROJECT=/home/u410322947/domains/tusturnos.online/cetripApp
+            if [ ! -d "$PROJECT/.git" ]; then
+              git clone https://github.com/pablofernandonavarro/citas.git $PROJECT
             fi
-            cd ${{ secrets.SSH_PATH }}
+            cd $PROJECT
             git remote set-url origin https://github.com/pablofernandonavarro/citas.git
             git pull origin main
             composer install --no-dev --no-interaction --optimize-autoloader
