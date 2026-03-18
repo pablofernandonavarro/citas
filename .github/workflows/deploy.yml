@@ -62,6 +62,10 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            if [ ! -d "${{ secrets.SSH_PATH }}" ]; then
+              git clone https://github.com/pablofernandonavarro/citas.git ${{ secrets.SSH_PATH }}
+            fi
             cd ${{ secrets.SSH_PATH }}
             git pull origin main
             composer install --no-dev --no-interaction --optimize-autoloader
