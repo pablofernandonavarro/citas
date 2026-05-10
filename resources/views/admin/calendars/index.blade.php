@@ -110,10 +110,10 @@
 @endpush
 
 
-    <div x-data="data()">
+    <div x-data="data()" wire:ignore>
 
 
- 
+
 <x-wireui-modal-card
  title="Turno Médico" 
  name="appointmentModal"
