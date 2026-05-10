@@ -172,16 +172,20 @@
         <script>
             function data() {
                 return {
+                   _calendar: null,
                    selectedEvent: {
                     datetime: '',
                     patient: '',
                     doctor: '',
                     status: '',
                     color: '',
-                    url: '', 
+                    url: '',
                    },
 
                     init() {
+                        if (this._calendar) {
+                            return;
+                        }
                         var calendarEl = this.$refs.calendar;
                         var calendar = new FullCalendar.Calendar(calendarEl, {
                             headerToolbar: {
@@ -191,6 +195,7 @@
                             },
                             locale:'es',
                             firstDay: 1,
+                            lazyFetching: false,
                             buttonText :{
                                 month: 'Mes',
                                 week: 'semana',
@@ -227,7 +232,15 @@
 
                             scrollTime: "{{ date('H:i:s') }}"
                         });
+                        this._calendar = calendar;
                         calendar.render();
+                    },
+
+                    destroy() {
+                        if (this._calendar) {
+                            this._calendar.destroy();
+                            this._calendar = null;
+                        }
                     },
                 }
             }
