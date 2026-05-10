@@ -19,6 +19,7 @@ return [
         '127.0.0.1',
         'localhost',
         env('TENANCY_CENTRAL_DOMAIN', 'citas.test'),
+        env('CITAS_PROVISION_DOMAIN'),
     ]),
 
     /**
