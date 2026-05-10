@@ -2,47 +2,41 @@
 
 namespace App\Notifications\Channels;
 
-use App\Services\WhatsAppService;
+use App\Models\CompanySetting;
+use App\Services\EvolutionService;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class WhatsAppChannel
 {
-    /**
-     * Enviar la notificación
-     */
+    public function __construct(private EvolutionService $evolution) {}
+
     public function send(object $notifiable, Notification $notification): void
     {
-        // Crear una instancia fresca del servicio en cada envío
-        // para evitar problemas con tokens en caché cuando se serializa el job
-        $whatsappService = app(WhatsAppService::class);
-        
-        if (!$whatsappService->isConfigured()) {
+        if (! $this->evolution->isConfigured()) {
+            Log::info('WhatsApp: Evolution API no configurada');
+
+            return;
+        }
+
+        $settings = CompanySetting::get();
+
+        if (! $settings->evolution_connected) {
+            Log::info('WhatsApp: instancia no conectada para este tenant', ['tenant' => tenant('id')]);
+
             return;
         }
 
         $message = $notification->toWhatsApp($notifiable);
 
-        if (!isset($message['to'])) {
+        if (empty($message['to']) || empty($message['message'])) {
             return;
         }
 
-        // Si es una plantilla (template)
-        if (isset($message['template'])) {
-            $whatsappService->sendTemplate(
-                $message['to'],
-                $message['template'],
-                $message['parameters'] ?? [],
-                $message['language'] ?? 'es_AR'
-            );
-            return;
-        }
-
-        // Si es un mensaje de texto directo
-        if (isset($message['message'])) {
-            $whatsappService->sendMessage(
-                $message['to'],
-                $message['message']
-            );
-        }
+        $this->evolution->sendText(
+            instanceName: tenant('id'),
+            phone: $message['to'],
+            message: $message['message'],
+        );
     }
 }

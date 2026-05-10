@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('doctor_cabinet', function (Blueprint $table) {
+        Schema::create('consultations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('doctor_id')
+
+            $table->foreignId('appointment_id')
                 ->constrained()
                 ->onDelete('cascade');
-            $table->foreignId('cabinet_id')
-                ->constrained()
-                ->onDelete('cascade');
+            $table->text('diagnosis')->nullable();
+            $table->text('treatment')->nullable();
+            $table->text('notes')->nullable();
+
+            $table->json('prescriptions')->nullable();
             $table->timestamps();
-            
-            // Evitar duplicados
-            $table->unique(['doctor_id', 'cabinet_id']);
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('doctor_cabinet');
+        Schema::dropIfExists('consultations');
     }
 };

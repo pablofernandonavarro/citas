@@ -1,4 +1,5 @@
 <?php
+
 namespace App\View\Composers;
 
 use App\Services\Siderbar\itemGroup;
@@ -19,10 +20,10 @@ class SiderbarComposer
             return $item->authorize();
         });
 
-
         $view->with('siderbarItems', $items);
 
     }
+
     public function parseItem($item)
     {
         switch ($item['type']) {
@@ -33,7 +34,13 @@ class SiderbarComposer
                 );
                 break;
             case 'link':
-                $href = ($item['route'] ?? null) ? route($item['route']) : '#';
+                if ($item['route'] ?? null) {
+                    $href = route($item['route']);
+                } elseif ($item['url'] ?? null) {
+                    $href = url($item['url']);
+                } else {
+                    $href = '#';
+                }
                 $active = ($item['active'] ?? null) ? request()->routeIs($item['active']) : false;
 
                 return new itemLink(
@@ -41,7 +48,8 @@ class SiderbarComposer
                     icon: $item['icon'] ?? 'fa-regular fa-circule',
                     href: $href,
                     active: $active,
-                    can: $item['can'] ?? []
+                    can: $item['can'] ?? [],
+                    target: $item['target'] ?? '_self',
                 );
 
                 break;
@@ -62,8 +70,6 @@ class SiderbarComposer
                 break;
             default:
                 throw new \InvalidArgumentException("desconocido tipo fr item '{$item['type']}");
-
         }
     }
 }
-

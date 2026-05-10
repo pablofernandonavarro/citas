@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use phpDocumentor\Reflection\Types\Nullable;
 
 return new class extends Migration
 {
@@ -15,17 +14,17 @@ return new class extends Migration
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')
-            ->constrained()
-            ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
             $table->foreignId('social_work_id')
-            ->nullable()
-            ->constrained()
-            ->onDelete('set null');
+                ->nullable()
+                ->constrained()
+                ->onDelete('set null');
             $table->string('allergies')->nullable();
             $table->string('medical_record_number')
-            ->nullable()
-            ->unique();
+                ->nullable()
+                ->unique();
             $table->string('chronic_conditions')->nullable();
             $table->string('surgeries_history')->nullable();
             $table->string('family_history')->nullable();
@@ -35,7 +34,6 @@ return new class extends Migration
             $table->string('emergency_contact_phone')->nullable();
             $table->string('emergency_contact_relationship')->nullable();
             $table->date('date_of_birth')->nullable();
-        
 
             $table->timestamps();
         });

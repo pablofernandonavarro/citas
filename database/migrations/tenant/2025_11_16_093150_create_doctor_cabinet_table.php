@@ -4,25 +4,25 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('consultations', function (Blueprint $table) {
+        Schema::create('doctor_cabinet', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('appointment_id')
+            $table->foreignId('doctor_id')
                 ->constrained()
                 ->onDelete('cascade');
-            $table->text('diagnosis')->nullable();
-            $table->text('treatment')->nullable();
-            $table->text('notes')->nullable();
-
-
-            $table->json('prescriptions')->nullable();
+            $table->foreignId('cabinet_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
+
+            // Evitar duplicados
+            $table->unique(['doctor_id', 'cabinet_id']);
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('consultations');
+        Schema::dropIfExists('doctor_cabinet');
     }
 };

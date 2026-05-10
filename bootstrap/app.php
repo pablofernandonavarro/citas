@@ -1,10 +1,12 @@
 <?php
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Console\Scheduling\Schedule;
+use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,14 +15,18 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            Route::middleware('web', 'auth')
-            ->prefix('admin')
-            ->name('admin.')
-            ->group(base_path('routes/admin.php'));
-        }
+            Route::middleware([
+                'web',
+                InitializeTenancyBySubdomain::class,
+                PreventAccessFromCentralDomains::class,
+            ])->group(base_path('routes/tenant.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'provision.secret' => \App\Http\Middleware\ProvisioningSecretMiddleware::class,
+        ]);
+        $middleware->prepend(InitializeTenancyBySubdomain::class);
     })
     ->withSchedule(function (Schedule $schedule): void {
         // Enviar recordatorios 24 horas antes de las citas (ejecutar diariamente a las 9:00 AM)

@@ -14,17 +14,17 @@ return new class extends Migration
         Schema::table('appointments', function (Blueprint $table) {
             // Eliminar la foreign key constraint primero
             $table->dropForeign(['patient_id']);
-            
+
             // Modificar la columna para permitir NULL
             $table->foreignId('patient_id')
-                  ->nullable()
-                  ->change();
-            
+                ->nullable()
+                ->change();
+
             // Volver a agregar la foreign key
             $table->foreign('patient_id')
-                  ->references('id')
-                  ->on('patients')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('patients')
+                ->onDelete('cascade');
         });
     }
 
@@ -36,17 +36,17 @@ return new class extends Migration
         Schema::table('appointments', function (Blueprint $table) {
             // Eliminar la foreign key
             $table->dropForeign(['patient_id']);
-            
+
             // Revertir a NOT NULL
             $table->foreignId('patient_id')
-                  ->nullable(false)
-                  ->change();
-            
+                ->nullable(false)
+                ->change();
+
             // Volver a agregar la foreign key
             $table->foreign('patient_id')
-                  ->references('id')
-                  ->on('patients')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('patients')
+                ->onDelete('cascade');
         });
     }
 };

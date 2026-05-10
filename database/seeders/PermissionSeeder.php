@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -14,9 +13,9 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
 
-        $permissions =[
+        $permissions = [
             'access_dashboard',
-
+            'manage_company_settings',
 
             'create_role',
             'read_role',
@@ -59,7 +58,7 @@ class PermissionSeeder extends Seeder
 
         ];
 
-        foreach($permissions as $permission) {
+        foreach ($permissions as $permission) {
             Permission::firstOrCreate([
                 'name' => $permission,
             ]);

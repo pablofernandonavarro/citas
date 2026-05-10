@@ -35,6 +35,13 @@ return [
         ],
     ],
 
+    'provisioning_secret' => env('PROVISIONING_SECRET'),
+
+    'evolution' => [
+        'api_url' => env('EVOLUTION_API_URL'),
+        'api_key' => env('EVOLUTION_API_KEY'),
+    ],
+
     'whatsapp' => [
         'api_url' => env('WHATSAPP_API_URL', 'https://graph.facebook.com/v21.0'),
         'access_token' => env('WHATSAPP_ACCESS_TOKEN'),

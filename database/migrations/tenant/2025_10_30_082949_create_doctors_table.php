@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('biography')
                 ->nullable();
             $table->boolean('active')
-            ->default(true);
+                ->default(true);
             $table->timestamps();
         });
     }

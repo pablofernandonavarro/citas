@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -14,8 +14,9 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {  
+    {
         Gate::authorize('read_user');
+
         return view('admin.users.index');
     }
 
@@ -23,9 +24,8 @@ class UserController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-
-    {  
-          Gate::authorize('create_user');
+    {
+        Gate::authorize('create_user');
         $roles = Role::all();
 
         return view('admin.users.create', compact('roles'));
@@ -35,8 +35,8 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {   
-          Gate::authorize('create_user');
+    {
+        Gate::authorize('create_user');
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -49,12 +49,11 @@ class UserController extends Controller
         ], [
             'phone.regex' => 'El teléfono solo puede contener números, espacios y los caracteres: + - ( )',
         ]);
-        
-        // Normalizar el teléfono antes de guardar
-        if (!empty($data['phone'])) {
-            $data['phone'] = normalize_phone($data['phone']);
+
+        if (! empty($data['phone'])) {
+            $data['phone'] = preg_replace('/\s+/', ' ', trim($data['phone']));
         }
-        
+
         $user = User::create($data);
 
         $user->roles()->attach($data['role_id']);
@@ -66,15 +65,16 @@ class UserController extends Controller
                 'text' => 'Ahora completa los datos del paciente.',
             ]
         );
-       if($user->hasRole('Paciente')){
-           $patient = $user->patient()->create([]);
-           return redirect()->route('admin.patients.edit', $patient);
+        if ($user->hasRole('Paciente')) {
+            $patient = $user->patient()->create([]);
+
+            return redirect()->route('admin.patients.edit', $patient);
         }
-        if($user->hasRole('Doctor')){
+        if ($user->hasRole('Doctor')) {
             $doctor = $user->doctor()->create([]);
+
             return redirect()->route('admin.doctors.edit', $doctor);
-         }
-     
+        }
 
         return redirect()->route('admin.users.index');
     }
@@ -83,8 +83,9 @@ class UserController extends Controller
      * Display the specified resource.
      */
     public function show(User $user)
-    {  
-          Gate::authorize('read_user');
+    {
+        Gate::authorize('read_user');
+
         return view('admin.users.show', compact('user'));
     }
 
@@ -92,8 +93,8 @@ class UserController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(User $user)
-    {   
-          Gate::authorize('update_user');
+    {
+        Gate::authorize('update_user');
         $roles = Role::all();
 
         return view('admin.users.edit', compact('user', 'roles'));
@@ -103,8 +104,8 @@ class UserController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, User $user)
-    {   
-         Gate::authorize('update_user');
+    {
+        Gate::authorize('update_user');
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
@@ -119,9 +120,9 @@ class UserController extends Controller
 
         $user->name = $data['name'];
         $user->email = $data['email'];
-        
+
         // Normalizar el teléfono antes de guardar
-        $user->phone = !empty($data['phone']) ? normalize_phone($data['phone']) : null;
+        $user->phone = ! empty($data['phone']) ? preg_replace('/\s+/', ' ', trim($data['phone'])) : null;
         if (! empty($data['password'])) {
             $user->password = bcrypt($data['password']);
         }
@@ -146,8 +147,8 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {  
-         Gate::authorize('delete_user');
+    {
+        Gate::authorize('delete_user');
         $user->delete();
         session()->flash('swal',
             [
