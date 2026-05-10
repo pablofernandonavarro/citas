@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Jobs\CreateTenantStorage;
+use App\Jobs\SendTenantWelcomeEmail;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -30,10 +31,10 @@ class TenancyServiceProvider extends ServiceProvider
                     Jobs\MigrateDatabase::class,
                     Jobs\SeedDatabase::class,
                     CreateTenantStorage::class,
-
+                    SendTenantWelcomeEmail::class,
                 ])->send(function (Events\TenantCreated $event) {
                     return $event->tenant;
-                })->shouldBeQueued(false), // `false` by default, but you probably want to make this `true` for production.
+                })->shouldBeQueued(false),
             ],
             Events\SavingTenant::class => [],
             Events\TenantSaved::class => [],
@@ -100,6 +101,12 @@ class TenancyServiceProvider extends ServiceProvider
     {
         $this->bootEvents();
         $this->makeTenancyMiddlewareHighestPriority();
+
+        Event::listen(Events\TenancyInitialized::class, function (Events\TenancyInitialized $event) {
+            $tenantId = $event->tenancy->tenant->getTenantKey();
+            $centralDomain = config('app.central_domain', 'tusturnos.online');
+            app(\Illuminate\Routing\UrlGenerator::class)->forceRootUrl("https://{$tenantId}.{$centralDomain}");
+        });
     }
 
     protected function bootEvents()

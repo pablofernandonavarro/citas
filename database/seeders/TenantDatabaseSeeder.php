@@ -33,8 +33,5 @@ class TenantDatabaseSeeder extends Seeder
         ]);
 
         $admin->assignRole('Admin');
-
-        // Send password reset email so they can set their own password
-        \Illuminate\Support\Facades\Password::sendResetLink(['email' => $adminEmail]);
     }
 }
