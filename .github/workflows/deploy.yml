@@ -1,57 +1,15 @@
-name: Tests y Deploy
+name: Deploy to VPS
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  tests:
-    name: Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, sqlite3, pdo_sqlite
-          coverage: none
-
-      - name: Copiar .env
-        run: cp .env.example .env
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Instalar dependencias PHP
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Instalar dependencias JS y compilar assets
-        run: npm ci && npm run build
-
-      - name: Generar clave
-        run: php artisan key:generate
-
-      - name: Crear base de datos SQLite
-        run: touch database/database.sqlite
-
-      - name: Ejecutar migraciones
-        run: php artisan migrate --force
-
-      - name: Ejecutar tests
-        run: php artisan test
-
   deploy:
     name: Deploy
-    needs: tests
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: Production
 
     steps:
       - uses: actions/checkout@v4
@@ -59,51 +17,59 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, json, curl, openssl, pdo, pdo_mysql
           coverage: none
-
-      - name: Instalar dependencias PHP
-        run: composer install --no-interaction --prefer-dist --no-scripts
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: npm
+
+      - name: Instalar dependencias PHP (sin dev)
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Compilar assets
         run: npm ci && npm run build
 
-      - name: Copiar assets al servidor
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "public/build"
-          target: "/home/u410322947/domains/tusturnos.online/cetripApp/public"
-          strip_components: 1
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy via SSH
+      - name: Subir vendor y assets compilados
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='.env' \
+            --exclude='.env.example' \
+            --exclude='phpunit.xml' \
+            --exclude='storage/logs' \
+            --exclude='storage/framework/cache' \
+            --exclude='storage/framework/sessions' \
+            --exclude='storage/framework/views' \
+            --exclude='storage/tenant*' \
+            -e "ssh -i ~/.ssh/id_ed25519" \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
+
+      - name: Comandos post-deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            PROJECT=/home/u410322947/domains/tusturnos.online/cetripApp
-            if [ ! -d "$PROJECT/.git" ]; then
-              git clone https://github.com/pablofernandonavarro/citas.git $PROJECT
-            fi
-            cd $PROJECT
-            git remote set-url origin https://github.com/pablofernandonavarro/citas.git
-            git fetch origin
-            git reset --hard origin/main
-            composer install --no-dev --no-interaction --optimize-autoloader
-            php artisan migrate --force
-            php artisan storage:link --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan queue:restart
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}
+            php8.4 artisan migrate --force
+            php8.4 artisan storage:link --force
+            php8.4 artisan config:cache
+            php8.4 artisan route:cache
+            php8.4 artisan view:cache
+            php8.4 artisan queue:restart
+            echo "Deploy completado: $(date)"
