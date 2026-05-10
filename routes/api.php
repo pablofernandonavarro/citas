@@ -46,7 +46,10 @@ Route::get('/patient', function (Request $request) {
 Route::middleware(['web', 'auth'])->get('/appointments', function (Request $request) {
     $query = Appointment::withoutGlobalScope(\App\Models\Scopes\VerifyRole::class)
         ->with(['patient.user', 'doctor.user'])
-        ->whereBetween('date', [$request->start, $request->end])
+        ->whereBetween('date', [
+                substr($request->start, 0, 10),
+                substr($request->end, 0, 10),
+            ])
         ->whereNotNull('patient_id')
         ->whereNotNull('doctor_id')
         ->whereHas('patient.user')
