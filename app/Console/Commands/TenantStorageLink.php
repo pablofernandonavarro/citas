@@ -43,7 +43,12 @@ class TenantStorageLink extends Command
                 continue;
             }
 
-            symlink($targetPath, $linkPath);
+            if (! symlink($targetPath, $linkPath)) {
+                $this->error("  ERROR {$id} → no se pudo crear el symlink (¿ya existe?)");
+
+                continue;
+            }
+
             $this->info("  OK {$id} → symlink creado");
             $created++;
         }
