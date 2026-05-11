@@ -3,6 +3,7 @@
 use App\Enums\AppointmentEnum;
 use App\Http\Controllers\Api\TenantProvisioningController;
 use App\Models\Appointment;
+use App\Models\DoctorUnavailability;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -47,9 +48,9 @@ Route::middleware(['web', 'auth'])->get('/appointments', function (Request $requ
     $query = Appointment::withoutGlobalScope(\App\Models\Scopes\VerifyRole::class)
         ->with(['patient.user', 'doctor.user'])
         ->whereBetween('date', [
-                substr($request->start, 0, 10),
-                substr($request->end, 0, 10),
-            ])
+            substr($request->start, 0, 10),
+            substr($request->end, 0, 10),
+        ])
         ->whereNotNull('patient_id')
         ->whereNotNull('doctor_id')
         ->whereHas('patient.user')
@@ -91,5 +92,42 @@ Route::middleware(['web', 'auth'])->get('/appointments', function (Request $requ
             ];
         });
 
-    return $appointments;
+    // Agregar bloqueos de doctores como eventos de fondo
+    $startDate = substr($request->start, 0, 10);
+    $endDate = substr($request->end, 0, 10);
+
+    $unavailabilities = DoctorUnavailability::with('doctor.user')
+        ->where('start_date', '<=', $endDate)
+        ->where('end_date', '>=', $startDate)
+        ->get()
+        ->map(function (DoctorUnavailability $u) {
+            $doctorName = $u->doctor->user->name ?? 'Doctor';
+
+            if ($u->all_day) {
+                // FullCalendar requiere que end sea el día siguiente para eventos all-day
+                $start = $u->start_date->format('Y-m-d');
+                $end = $u->end_date->copy()->addDay()->format('Y-m-d');
+            } else {
+                $start = $u->start_date->format('Y-m-d').' '.($u->start_time ?? '00:00:00');
+                $end = $u->end_date->format('Y-m-d').' '.($u->end_time ?? '23:59:00');
+            }
+
+            return [
+                'id' => 'block-'.$u->id,
+                'title' => $u->reason ? "🚫 {$doctorName}: {$u->reason}" : "🚫 {$doctorName}: No disponible",
+                'start' => $start,
+                'end' => $end,
+                'display' => 'background',
+                'backgroundColor' => '#FCA5A5',
+                'borderColor' => '#EF4444',
+                'classNames' => ['fc-block-event'],
+                'extendedProps' => [
+                    'type' => 'block',
+                    'doctor' => $doctorName,
+                    'reason' => $u->reason ?? 'Sin especificar',
+                ],
+            ];
+        });
+
+    return $appointments->merge($unavailabilities)->values();
 })->name('api.appointments.index');

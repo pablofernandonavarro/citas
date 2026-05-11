@@ -112,10 +112,8 @@
 
     <div x-data="data()" wire:ignore>
 
-
-
 <x-wireui-modal-card
- title="Turno Médico" 
+ title="Turno Médico"
  name="appointmentModal"
  align="center">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -123,17 +121,17 @@
             <label class="block text-sm font-medium text-gray-700">Fecha y Hora</label>
             <p class="mt-1 text-sm text-gray-900" x-text="selectedEvent.datetime"></p>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700">Paciente</label>
             <p class="mt-1 text-sm text-gray-900" x-text="selectedEvent.patient"></p>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700">Doctor</label>
             <p class="mt-1 text-sm text-gray-900" x-text="selectedEvent.doctor"></p>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700">Estado</label>
             <p class="mt-1 text-sm" x-text="selectedEvent.status" :style="'color: ' + selectedEvent.color"></p>
@@ -154,6 +152,33 @@
     </x-slot>
 </x-wireui-modal-card>
 
+{{-- Modal para periodos de bloqueo --}}
+<x-wireui-modal-card
+ name="blockModal"
+ align="center"
+ max-width="sm">
+    <div class="flex items-start gap-3 mb-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+            <i class="fa-solid fa-ban text-red-500"></i>
+        </div>
+        <div>
+            <h3 class="text-base font-semibold text-gray-900">Doctor no disponible</h3>
+            <p class="text-sm text-gray-500 mt-0.5" x-text="selectedBlock.doctor"></p>
+        </div>
+    </div>
+    <div class="bg-red-50 border border-red-100 rounded-lg p-4">
+        <div class="flex items-start gap-2">
+            <i class="fa-solid fa-circle-info text-red-400 mt-0.5 flex-shrink-0"></i>
+            <div>
+                <p class="text-xs font-medium text-red-700 uppercase tracking-wide mb-1">Motivo del bloqueo</p>
+                <p class="text-sm text-red-800 font-medium" x-text="selectedBlock.reason"></p>
+            </div>
+        </div>
+    </div>
+    <x-slot name="footer">
+        <x-wireui-button flat label="Cerrar" x-on:click="close" />
+    </x-slot>
+</x-wireui-modal-card>
 
         <div x-ref="calendar">
 
@@ -181,6 +206,10 @@
                     color: '',
                     url: '',
                    },
+                   selectedBlock: {
+                    doctor: '',
+                    reason: '',
+                   },
 
                     init() {
                         if (this._calendar) {
@@ -196,13 +225,12 @@
                             locale:'es',
                             firstDay: 1,
                             lazyFetching: false,
-                            buttonText :{
+                            buttonText: {
                                 month: 'Mes',
                                 week: 'semana',
                                 day: 'Día',
                                 list: 'Lista',
                                 today: 'hoy',
-
                             },
                             allDayText: 'Todo el día',
                             noEventsText: 'No hay eventos por mostrar',
@@ -218,6 +246,14 @@
                                }
                            },
                            eventClick: (info) => {
+                            if (info.event.extendedProps.type === 'block') {
+                                this.selectedBlock = {
+                                    doctor: info.event.extendedProps.doctor,
+                                    reason: info.event.extendedProps.reason,
+                                };
+                                $openModal('blockModal');
+                                return;
+                            }
                             this.selectedEvent = {
                                 datetime: info.event.extendedProps.datetime,
                                 patient: info.event.extendedProps.patient,
@@ -228,7 +264,6 @@
                             };
                             $openModal('appointmentModal');
                            },
-
 
                             scrollTime: "{{ date('H:i:s') }}"
                         });
