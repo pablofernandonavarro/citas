@@ -1,4 +1,68 @@
 <div x-data="data()">
+
+    {{-- Períodos de bloqueo activos y próximos --}}
+    @if($this->upcomingBlocks->isNotEmpty())
+        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-ban text-red-500"></i>
+                    <span class="text-sm font-semibold text-red-700">Períodos de no disponibilidad activos o próximos</span>
+                </div>
+                <a href="{{ route('admin.unavailability.create') }}" class="text-xs text-red-600 hover:text-red-800 underline">
+                    + Agregar bloqueo
+                </a>
+            </div>
+            <div class="space-y-2">
+                @foreach($this->upcomingBlocks as $block)
+                    @php $isActive = $block->start_date->lte(now()) && $block->end_date->gte(now()); @endphp
+                    <div class="flex items-center justify-between rounded-md bg-white border border-red-100 px-3 py-2">
+                        <div class="flex items-center gap-3">
+                            @if($isActive)
+                                <span class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                                    <span class="relative flex h-1.5 w-1.5">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+                                    </span>
+                                    Activo ahora
+                                </span>
+                            @else
+                                <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
+                                    Próximo
+                                </span>
+                            @endif
+                            <div>
+                                <span class="text-sm font-medium text-gray-800">
+                                    @if($block->all_day)
+                                        {{ $block->start_date->format('d/m/Y') }}@if(!$block->start_date->eq($block->end_date)) — {{ $block->end_date->format('d/m/Y') }}@endif
+                                        <span class="text-xs text-gray-400 ml-1">(todo el día)</span>
+                                    @else
+                                        {{ $block->start_date->format('d/m/Y') }} {{ substr($block->start_time, 0, 5) }} — {{ $block->end_date->format('d/m/Y') }} {{ substr($block->end_time, 0, 5) }}
+                                    @endif
+                                </span>
+                                @if($block->reason)
+                                    <span class="text-xs text-gray-500 ml-2">· {{ $block->reason }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.unavailability.edit', $block) }}" class="text-gray-400 hover:text-gray-600 ml-4">
+                            <i class="fa-solid fa-pen-to-square text-xs"></i>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @else
+        <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <i class="fa-solid fa-circle-check text-green-500"></i>
+                Sin períodos de bloqueo activos o próximos
+            </div>
+            <a href="{{ route('admin.unavailability.create') }}" class="text-xs text-gray-400 hover:text-gray-600 underline">
+                Agregar bloqueo
+            </a>
+        </div>
+    @endif
+
     <x-wireui-card>
         <div class="mb-4 flex items-center justify-between">
             <h1 class="text-xl font-semibold mb-4">
@@ -6,7 +70,6 @@
             </h1>
             <x-wireui-button wire:click="save">
                 Guardar Horarios
-               
             </x-wireui-button>
         </div>
         <div class="overflow-x-auto">
