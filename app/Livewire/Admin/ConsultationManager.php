@@ -13,6 +13,7 @@ class ConsultationManager extends Component
     public Appointment $appointment;
     public Consultation $consultation;
     public ?Consultation $lastConsultation;
+    public $previousConsultations;
     public Patient $patient;
     public $form = [
         'diagnosis' => '',
@@ -34,10 +35,12 @@ class ConsultationManager extends Component
             'prescriptions' => $this->consultation->prescriptions ?? [],
         ];
         $this->patient = $appointment->patient;
-        $this->lastConsultation = Consultation::whereHas('appointment', function ($query) use ($appointment) {
+        $this->previousConsultations = Consultation::whereHas('appointment', function ($query) use ($appointment) {
             $query->where('patient_id', $appointment->patient_id)
                   ->where('id', '!=', $appointment->id);
-        })->latest()->first();
+        })->with(['appointment.doctor.user'])->latest()->get();
+
+        $this->lastConsultation = $this->previousConsultations->first();
     }
 
     public function addPrescription()
