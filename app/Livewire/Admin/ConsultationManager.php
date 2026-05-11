@@ -36,7 +36,7 @@ class ConsultationManager extends Component
         $this->patient = $appointment->patient;
         $this->lastConsultation = Consultation::whereHas('appointment', function ($query) use ($appointment) {
             $query->where('patient_id', $appointment->patient_id)
-                  ->where('id', '!=', $this->consultation->id ?? 0);
+                  ->where('id', '!=', $appointment->id);
         })->latest()->first();
     }
 
