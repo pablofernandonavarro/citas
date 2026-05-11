@@ -105,7 +105,14 @@ class TenancyServiceProvider extends ServiceProvider
         Event::listen(Events\TenancyInitialized::class, function (Events\TenancyInitialized $event) {
             $tenantId = $event->tenancy->tenant->getTenantKey();
             $centralDomain = config('app.central_domain', 'tusturnos.online');
-            app(\Illuminate\Routing\UrlGenerator::class)->forceRootUrl("https://{$tenantId}.{$centralDomain}");
+            $tenantUrl = "https://{$tenantId}.{$centralDomain}";
+
+            app(\Illuminate\Routing\UrlGenerator::class)->forceRootUrl($tenantUrl);
+
+            // El symlink del tenant es public/storage-{tenantId}, no public/storage.
+            // Sobreescribimos la URL del disco public para que las fotos de perfil apunten al symlink correcto.
+            config(["filesystems.disks.public.url" => "{$tenantUrl}/storage-{$tenantId}"]);
+            app('filesystem')->forgetDisk('public');
         });
     }
 
