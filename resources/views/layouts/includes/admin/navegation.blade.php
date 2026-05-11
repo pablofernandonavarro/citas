@@ -11,7 +11,7 @@
         @php $settings = \App\Models\CompanySetting::get(); @endphp
         <a href="{{ route('admin.dashboard') }}" class="flex ms-2 md:me-24">
           @if($settings->logo_path)
-              <img src="{{ asset('storage/' . $settings->logo_path) }}" class="h-8 me-3 object-contain" alt="{{ $settings->business_name }}" />
+              <img src="{{ Storage::disk('public')->url($settings->logo_path) }}" class="h-8 me-3 object-contain" alt="{{ $settings->business_name }}" />
           @endif
           <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">{{ $settings->business_name }}</span>
         </a>
@@ -23,7 +23,7 @@
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                    <img class="size-8 rounded-full object-cover" src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="{{ Auth::user()->name }}" />
+                                    <img class="size-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                                 </button>
                             @else
                                 <span class="inline-flex rounded-md">
