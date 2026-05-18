@@ -28,7 +28,13 @@ class UserController extends Controller
         Gate::authorize('create_user');
         $roles = Role::all();
 
-        return view('admin.users.create', compact('roles'));
+        // Obtener información de límites del plan
+        $doctorsCount = \App\Models\Doctor::count();
+        $doctorsLimit = plan_limit('max_doctors');
+        $patientsCount = \App\Models\Patient::count();
+        $patientsLimit = plan_limit('max_patients');
+
+        return view('admin.users.create', compact('roles', 'doctorsCount', 'doctorsLimit', 'patientsCount', 'patientsLimit'));
     }
 
     /**
@@ -49,6 +55,35 @@ class UserController extends Controller
         ], [
             'phone.regex' => 'El teléfono solo puede contener números, espacios y los caracteres: + - ( )',
         ]);
+
+        // Verificar límites del plan según el rol seleccionado
+        $role = Role::find($data['role_id']);
+
+        if ($role && $role->name === 'Doctor') {
+            $currentCount = \App\Models\Doctor::count();
+            if (plan_reached_limit('max_doctors', $currentCount)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error',
+                        'Has alcanzado el límite de ' . plan_limit('max_doctors') .
+                        ' doctores de tu ' . current_plan() . '. ' .
+                        'Actualiza tu plan para agregar más doctores.'
+                    );
+            }
+        }
+
+        if ($role && $role->name === 'Paciente') {
+            $currentCount = \App\Models\Patient::count();
+            if (plan_reached_limit('max_patients', $currentCount)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error',
+                        'Has alcanzado el límite de ' . plan_limit('max_patients') .
+                        ' pacientes de tu ' . current_plan() . '. ' .
+                        'Actualiza tu plan para agregar más pacientes.'
+                    );
+            }
+        }
 
         if (! empty($data['phone'])) {
             $data['phone'] = preg_replace('/\s+/', ' ', trim($data['phone']));

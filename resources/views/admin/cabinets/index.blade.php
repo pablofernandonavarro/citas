@@ -6,16 +6,48 @@
 ]">
     <x-slot name="action">
         @can('create_cabinet')
-        <x-wireui-button primary type="button" blue>
-            <a href="{{ route('admin.cabinets.create') }}">
-                <i class="fas fa-plus mr-2"></i>
-                Crear Gabinete
-            </a>
-        </x-wireui-button>
+            <x-wireui-button primary type="button" blue>
+                <a href="{{ route('admin.cabinets.create') }}">
+                    <i class="fas fa-plus mr-2"></i>
+                    Crear Gabinete
+                </a>
+            </x-wireui-button>
         @endcan
     </x-slot>
 
     <x-wireui-card>
+        {{-- Información de gabinetes --}}
+        <div class="mb-4 pb-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">
+                        Gabinetes/Consultorios
+                        <span class="ml-2 inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-sm font-medium text-green-800">
+                            {{ $cabinetsCount }} gabinetes
+                        </span>
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Los gabinetes son ilimitados en todos los planes. Crea los espacios necesarios para que tus doctores puedan atender simultáneamente.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Mostrar mensaje de error si existe --}}
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">{{ session('error') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -61,7 +93,8 @@
                                         </span>
                                         <div class="mt-1 text-xs text-gray-500">
                                             @foreach($cabinet->doctors->take(2) as $doctor)
-                                                {{ $doctor->user->name }}@if(!$loop->last), @endif
+                                                {{ $doctor->user->name }}
+                                                @if(!$loop->last), @endif
                                             @endforeach
                                             @if($cabinet->doctors->count() > 2)
                                                 <span class="text-gray-400">y {{ $cabinet->doctors->count() - 2 }} más</span>

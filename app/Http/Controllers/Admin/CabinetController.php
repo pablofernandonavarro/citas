@@ -17,7 +17,10 @@ class CabinetController extends Controller
     {
         Gate::authorize('read_cabinet');
         $cabinets = Cabinet::with('doctors.user')->get();
-        return view('admin.cabinets.index', compact('cabinets'));
+        $cabinetsCount = Cabinet::count();
+        $limit = plan_limit('max_cabinets');
+
+        return view('admin.cabinets.index', compact('cabinets', 'cabinetsCount', 'limit'));
     }
 
     /**
@@ -26,6 +29,10 @@ class CabinetController extends Controller
     public function create()
     {
         Gate::authorize('create_cabinet');
+
+        // Los gabinetes son ilimitados en todos los planes
+        // porque permiten que un doctor atienda a múltiples pacientes simultáneamente
+
         return view('admin.cabinets.create');
     }
 
@@ -35,21 +42,23 @@ class CabinetController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create_cabinet');
-        
+
+        // Los gabinetes son ilimitados en todos los planes
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
-        
+
         Cabinet::create($validated);
-        
+
         session()->flash('swal', [
             'icon' => 'success',
             'title' => '¡Éxito!',
             'text' => 'Gabinete creado exitosamente',
         ]);
-        
+
         return redirect()->route('admin.cabinets.index');
     }
 

@@ -13,9 +13,13 @@ class DoctorController extends Controller
 {
    
     public function index()
-    {   
+    {
         Gate::authorize('read_doctor');
-        return view('admin.doctors.index');
+
+        $doctorsCount = Doctor::count();
+        $limit = plan_limit('max_doctors');
+
+        return view('admin.doctors.index', compact('doctorsCount', 'limit'));
     }
 
   

@@ -24,6 +24,9 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'dni' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string', 'max:255'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
@@ -31,6 +34,9 @@ class CreateNewUser implements CreatesNewUsers
         $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
+            'dni' => $input['dni'],
+            'phone' => $input['phone'],
+            'address' => $input['address'],
             'password' => Hash::make($input['password']),
         ]);
 
@@ -38,7 +44,7 @@ class CreateNewUser implements CreatesNewUsers
         $pacienteRole = Role::where('name', 'Paciente')->first();
         if ($pacienteRole) {
             $user->roles()->attach($pacienteRole->id);
-            
+
             // Crear registro de paciente
             Patient::create([
                 'user_id' => $user->id,

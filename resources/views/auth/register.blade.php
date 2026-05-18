@@ -20,6 +20,27 @@
             </div>
 
             <div class="mt-4">
+                <x-label for="dni" value="DNI" />
+                <x-input id="dni" class="block mt-1 w-full" type="text" name="dni" :value="old('dni')" required />
+            </div>
+
+            <div class="mt-4">
+                <x-label for="phone" value="Teléfono / WhatsApp" />
+                <x-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone')" required placeholder="Ej: 1169975132" />
+                <p class="text-xs text-gray-500 mt-1">
+                    <strong>ℹ️ Formato correcto:</strong> 10 dígitos (código de área + número)<br>
+                    <strong>✓</strong> Buenos Aires: <code>1169975132</code> |
+                    <strong>✓</strong> Córdoba: <code>3514567890</code><br>
+                    <strong>✗</strong> No usar: 0, 15, +54, espacios ni guiones
+                </p>
+            </div>
+
+            <div class="mt-4">
+                <x-label for="address" value="Dirección" />
+                <x-input id="address" class="block mt-1 w-full" type="text" name="address" :value="old('address')" required />
+            </div>
+
+            <div class="mt-4">
                 <x-label for="password" value="{{ __('Password') }}" />
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             </div>
